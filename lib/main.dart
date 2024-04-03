@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'LiteraHub',
       debugShowCheckedModeBanner: false,
-      navigatorKey: MyApp.navigatorKey,
+      navigatorKey: navigatorKey,
       onGenerateRoute: CustomRouter.onGenerateRoute,
       initialRoute: RouteConstant.initialPage,
       routes: {

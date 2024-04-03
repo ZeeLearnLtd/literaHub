@@ -45,6 +45,11 @@ dependencies:
   flutter_easyloading: 3.0.5
   flutter_screenutil: ^5.8.3
   device_apps: ^2.2.0
+  firebase_core: ^2.27.2
+  flutter_bloc: ^8.1.5
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  flutter_webview_pro: ^3.0.1+4
 
 dev_dependencies:
   flutter_test:

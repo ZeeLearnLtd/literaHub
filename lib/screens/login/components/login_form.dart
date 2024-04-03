@@ -3,6 +3,11 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:literahub/apis/ServiceHandler.dart';
+import 'package:literahub/apis/request/token_request.dart';
+import 'package:literahub/apis/response/token_response.dart';
+import 'package:literahub/apis/response/user_response.dart';
+import 'package:literahub/iface/onResponse.dart';
 import 'package:literahub/main.dart';
 import 'package:literahub/model/user.dart';
 import 'package:literahub/screens/home/home_screen.dart';
@@ -20,7 +25,7 @@ class LoginForm extends StatefulWidget {
   _LoginFormState createState() => _LoginFormState();
 }
 
-class _LoginFormState extends State<LoginForm> {
+class _LoginFormState extends State<LoginForm> implements onResponse{
   bool isLoading = false;
   bool _obscureText = true;
   bool acceptPrivacyPolicy = false;
@@ -39,7 +44,31 @@ class _LoginFormState extends State<LoginForm> {
         new UserInfo(1, 'SP1', 'Tanvi Patil', ['Nursery'], 'S-Pre-primary'));
     userList.add(
         new UserInfo(1, 'TP1', 'Anvi Patil', ['Nursery'], 'TEACH-Pre-primary'));
+
+    checkUserLogin();
   }
+
+  checkUserLogin() async{
+    print('check login sstatus');
+      var box = await Utility.openBox();
+      if(box.containsKey(LocalConstant.KEY_LOGIN_RESPONSE)){
+        var userInfoBody = box.get(LocalConstant.KEY_LOGIN_RESPONSE);
+        UserResponse userinfo = UserResponse.fromJson(
+          json.decode(userInfoBody) as Map<String, dynamic>,
+        );
+        if(userinfo.root!.subroot!.uid!.isNotEmpty){
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(
+              userInfo: userinfo,
+            ),
+          ));
+        }
+      }
+      
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -191,32 +220,49 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
-  checkUserLogin(userName, password) async {
-    UserInfo? userInfo = null;
-    for (int index = 0; index < userList.length; index++) {
-      if (userName == userList[index].userName) {
-        userInfo = userList[index];
-        break;
-      }
-    }
-    if (userInfo != null) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomePage(
-              userInfo: userInfo!,
-            ),
-          ));
-    } else {
-      Utility.showAlert(context, 'Invalid User Name and Password');
-    }
-  }
+ 
 
   validate() async {
     if (isValid()) {
       //Utility.showLoaderDialog(context);
-      checkUserLogin(userNameController.text.toString(),
-          userPasswordController.text.toString());
+      //checkUserLogin(userNameController.text.toString(),userPasswordController.text.toString());
+      ApiServiceHandler().getToken(TokenRequest(UserId:userNameController.text.toString(),Password: userPasswordController.text.toString()), this);
+    }
+  }
+  
+  @override
+  void onError(int action, value) {
+    isLoading = false;
+  }
+  
+  @override
+  void onStart() {
+    isLoading = true;
+  }
+  
+  @override
+  void onSuccess(value) async{
+    isLoading = false;
+    if(value is TokenResponse){
+      TokenResponse response = value;
+      ApiServiceHandler().validateUser(TokenRequest(UserId:userNameController.text.toString(),Password: userPasswordController.text.toString()),response.message!, this);
+    }else if(value is UserResponse){
+      UserResponse response = value;
+      if(response.root!.subroot!.uid!.isNotEmpty){
+          var box = await Utility.openBox();
+          String json = jsonEncode(response);
+          print(json);
+          box.put(LocalConstant.KEY_LOGIN_RESPONSE, json);
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(
+              userInfo: response!,
+            ),
+          ));
+      }else{
+        Utility.showAlert(context, 'Invalid User Name and Password, please try again later');
+      }
     }
   }
 }

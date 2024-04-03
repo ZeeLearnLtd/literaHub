@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:literahub/core/constant/LocalConstant.dart';
 import 'package:lottie/lottie.dart';
-
+import 'package:path_provider/path_provider.dart';
 import 'theme/light_colors.dart';
 
 class Utility {
@@ -21,6 +23,37 @@ class Utility {
         );
       },
     );
+  }
+
+  static String getUserRole(String role){
+    String myRole = '';
+    switch(role.toLowerCase()){
+      case 'student':
+        myRole = 'Parent';
+      break;
+      case 'principal':
+        myRole = 'Principal';
+      break;
+      case 'head teacher':
+        myRole = 'Principal';
+      break;
+      case 'teaching staff':
+        myRole = 'Teacher';
+      break;
+      case 'school it admin':
+        myRole = 'System Admin';
+      break;
+      case 'school admin':
+        myRole = 'System Admin';
+      break;
+    }
+    return myRole;
+  }
+
+  static Future<Box> openBox() async {
+    if (!kIsWeb && !Hive.isBoxOpen(LocalConstant.LITERAHUB))
+      Hive.init((await getApplicationDocumentsDirectory()).path);
+    return await Hive.openBox(LocalConstant.LITERAHUB);
   }
 
   static showLoader() {

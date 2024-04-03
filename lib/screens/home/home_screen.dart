@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:literahub/apis/response/user_response.dart';
 import 'package:literahub/globals.dart';
 import 'package:literahub/iface/onClick.dart';
 import 'package:literahub/model/menuitem.dart';
 import 'package:literahub/screens/home/home_screen.dart';
 import 'package:literahub/screens/login/login_screen.dart';
+import 'package:literahub/widgets/myweb.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/theme/light_colors.dart';
@@ -16,7 +18,7 @@ import '../../core/utility.dart';
 import '../../model/user.dart';
 
 class HomePage extends StatefulWidget {
-  final UserInfo userInfo;
+  final UserResponse userInfo;
 
   HomePage({
     super.key,
@@ -62,14 +64,16 @@ class _MyHomePageState extends State<HomePage>
   }
 
   generateMenu() {
-    if (widget.userInfo.userType == 'S-1-12') {
+    if (widget.userInfo.root!.subroot!.userRole == 'S-1-12') {
       getStudent1to12Menu();
-    } else if (widget.userInfo.userType == 'S-Pre-primary') {
+    } else if (widget.userInfo.root!.subroot!.userRole == 'S-Pre-primary') {
       getStudentPrePrimaryMenu();
-    } else if (widget.userInfo.userType == 'TEACH-1-12') {
+    } else if (widget.userInfo.root!.subroot!.userRole == 'TEACH-1-12') {
       getTeacher1to12Menu();
-    } else if (widget.userInfo.userType == 'TEACH-Pre-primary') {
+    } else if (widget.userInfo.root!.subroot!.userRole == 'TEACH-Pre-primary') {
       getTeacherPrePrimaryMenu();
+    }else if (Utility.getUserRole(widget.userInfo.root!.subroot!.userRole!).isNotEmpty) {
+      getSystemAdminMenu();
     }
   }
 
@@ -131,14 +135,25 @@ class _MyHomePageState extends State<HomePage>
         EXTENDED_CLASSROOM, 'exclassroom'));
     menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
         STUDENT_ANALYTICS, 'studentanalytis'));
-    menuItems
-        .add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-    menuItems.add(HomeMenuItem(
-        MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+    menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+    menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+  }
+
+  getSystemAdminMenu() {
+    menuItems.clear();
+    menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
+        TEACHER_OPERATION, 'teachingoperation'));
+    menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
+        EXTENDED_CLASSROOM, 'exclassroom'));
+    menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
+        STUDENT_ANALYTICS, 'studentanalytis'));
+    menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+    menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+    menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
   }
 
   getScreen() {
-    return Expanded(
+    return Container(
       child: GridView.builder(
         padding: EdgeInsets.zero,
         shrinkWrap: true,
@@ -190,9 +205,9 @@ class _MyHomePageState extends State<HomePage>
   AppBar getAppbar() {
     return AppBar(
         backgroundColor: kPrimaryColor,
-        title: widget.userInfo.userType == 'P'
+        title: widget.userInfo.root!.subroot!.userName == 'P'
             ? Text(
-                widget.userInfo.displayName,
+                widget.userInfo.root!.subroot!.userName!,
                 style: GoogleFonts.inter(
                   fontSize: 14.0,
                   color: Colors.white,
@@ -205,7 +220,7 @@ class _MyHomePageState extends State<HomePage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.userInfo.displayName,
+                    widget.userInfo.root!.subroot!.userName!,
                     style: GoogleFonts.inter(
                       fontSize: 14.0,
                       color: Colors.white,
@@ -214,7 +229,7 @@ class _MyHomePageState extends State<HomePage>
                     ),
                   ),
                   Text(
-                    widget.userInfo.userType,
+                    widget.userInfo.root!.subroot!.userRole!,
                     style: GoogleFonts.inter(
                       fontSize: 10.0,
                       color: Colors.white,
@@ -258,7 +273,17 @@ class _MyHomePageState extends State<HomePage>
   @override
   void onClick(int action, value) {
     if (action == ZLL_SAATHI_iNDEX) {
-      lunchExternalApp('com.zeelearn.zllsaathi');
+      //lunchExternalApp('com.zeelearn.zllsaathi');
+      String userRole = Utility.getUserRole(widget.userInfo.root!.subroot!.userRole!);
+      if(userRole.isEmpty){
+        print('URL https://intranet-9fda2.web.app/dashboard?bu_id=${widget.userInfo!.root!.subroot!.uid}&b_id=2&r=${widget.userInfo.root!.subroot!.userRole!}&u_id=0');
+        Utility.showAlert(context, 'Zll Saathi currently not acciciable for your Role(${widget.userInfo.root!.subroot!.userRole})...');
+      }else{
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MyWebViewScreen(url: 'https://intranet-9fda2.web.app/dashboard?bu_id=${widget.userInfo!.root!.subroot!.uid}&b_id=2&r=${userRole}&u_id=0', title: 'ZllSaathi',)));
+      }
     } else if (action == MLZS_READING_iNDEX) {
       lunchExternalApp('com.application.freadom');
     } else if (action == MYSCHOOLiNDEX) {

@@ -9,4 +9,12 @@ class LocalConstant {
   static double defaultPadding = 16.0;
 
   static String notificationTopicName = 'saathi';
+  static const String LITERAHUB = "literahub";
+
+  static const String KEY_LOGIN_RESPONSE = "userinfo";
+
+  static const String BASE_URL = "https://globalapi.zeelearn.com/api/V1/";
+
+  static const String API_GET_TOKEN = "snltoken";
+  static const String API_GET_LOGIN = "slnlogin";
 }
