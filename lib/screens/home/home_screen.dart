@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,15 +9,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:literahub/apis/response/user_response.dart';
 import 'package:literahub/globals.dart';
 import 'package:literahub/iface/onClick.dart';
+import 'package:literahub/model/FredomModel.dart';
 import 'package:literahub/model/menuitem.dart';
 import 'package:literahub/screens/home/home_screen.dart';
 import 'package:literahub/screens/login/login_screen.dart';
 import 'package:literahub/widgets/myweb.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/constant/LocalConstant.dart';
 import '../../core/theme/light_colors.dart';
 import '../../core/utility.dart';
 import '../../model/user.dart';
+import '../../widgets/dropdown.dart';
 
 class HomePage extends StatefulWidget {
   final UserResponse userInfo;
@@ -55,12 +60,20 @@ class _MyHomePageState extends State<HomePage>
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<HomeMenuItem> menuItems = [];
+  UserResponse? userinfo;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     generateMenu();
+    getUserInfo();
+  }
+  getUserInfo() async{
+    var box = await Utility.openBox();
+    String json = box.get(LocalConstant.KEY_LOGIN_RESPONSE);
+    userinfo  = UserResponse.fromJson(jsonDecode(json));
+    print(userinfo!.toJson());
   }
 
   generateMenu() {
@@ -74,6 +87,21 @@ class _MyHomePageState extends State<HomePage>
       getTeacherPrePrimaryMenu();
     }else if (Utility.getUserRole(widget.userInfo.root!.subroot!.userRole!).isNotEmpty) {
       getSystemAdminMenu();
+    }else{
+      getSystemAdminMenu();
+    }
+  }
+
+  Future<void> applaunchUrl(url) async {
+    print('url status ${url}');
+    bool isFound = await launchUrl(url);
+    print('is Found $isFound');
+    if (!isFound) {
+      //https://apps.apple.com/in/app/kidzeeapp/id1338356944
+      await launchUrl(Uri.parse(url));
+      print('app store');
+    } else {
+      print('App Found');
     }
   }
 
@@ -242,6 +270,20 @@ class _MyHomePageState extends State<HomePage>
         actions: [
           InkWell(
             onTap: () {
+              showClassSelection();
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Text('Class '),
+                  Icon(Icons.arrow_drop_down)
+                ],
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () {
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -254,6 +296,59 @@ class _MyHomePageState extends State<HomePage>
             ),
           )
         ]);
+  }
+  TextEditingController batchController = TextEditingController();
+  TextEditingController branchController = TextEditingController();
+  showClassSelection(){
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            margin: EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text('Select School'),
+                ZeeDropDown(
+                  title: 'Select School',
+                  textController: batchController,
+                  hintText: 'Select School',
+                  enable: false,
+                  items: userinfo!.root!.subroot!.branchList!,
+                  displayFunction: (p0) =>
+                  '${p0.branchName ?? ''}}',
+                  onChanged: (p0) {
+                    if (p0 != null) {
+                      batchController.text = p0!.branchName!;
+                    } else {
+                      //selectedFilterFranchisee = p0;
+                    }
+                  },
+                ),
+                ZeeDropDown(
+                  title: 'Select Branch',
+                  textController: branchController,
+                  hintText: 'Select Branch',
+                  enable: false,
+                  items: userinfo!.root!.subroot!.branchList!,
+                  displayFunction: (p0) =>
+                  '${p0.branchName ?? ''}}',
+                  onChanged: (p0) {
+                    if (p0 != null) {
+                      batchController.text = p0!.branchName!;
+                    } else {
+                      //selectedFilterFranchisee = p0;
+                    }
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  getBranch(){
+
   }
 
   void onBackClickListener() async {
@@ -275,17 +370,26 @@ class _MyHomePageState extends State<HomePage>
     if (action == ZLL_SAATHI_iNDEX) {
       //lunchExternalApp('com.zeelearn.zllsaathi');
       String userRole = Utility.getUserRole(widget.userInfo.root!.subroot!.userRole!);
-      if(userRole.isEmpty){
-        print('URL https://intranet-9fda2.web.app/dashboard?bu_id=${widget.userInfo!.root!.subroot!.uid}&b_id=2&r=${widget.userInfo.root!.subroot!.userRole!}&u_id=0');
+      if(false && userRole.isEmpty){
+        print('URL https://zllsaathi.zeelearn.com/dashboard?bu_id=${widget.userInfo!.root!.subroot!.uid}&b_id=2&r=${widget.userInfo.root!.subroot!.userRole!}&u_id=0');
         Utility.showAlert(context, 'Zll Saathi currently not acciciable for your Role(${widget.userInfo.root!.subroot!.userRole})...');
       }else{
         Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => MyWebViewScreen(url: 'https://intranet-9fda2.web.app/dashboard?bu_id=${widget.userInfo!.root!.subroot!.uid}&b_id=2&r=${userRole}&u_id=0', title: 'ZllSaathi',)));
+            context,
+            MaterialPageRoute(
+                builder: (context) => MyWebViewScreen(url: 'https://intranet-9fda2.web.app//dashboard?u_name=F2354', title: 'ZllSaathi',)));
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //       builder: (context) => MyWebViewScreen(url: 'https://zllsaathi.zeelearn.com/dashboard?bu_id=${widget.userInfo!.root!.subroot!.uid}&b_id=2&r=${userRole}&u_id=0', title: 'ZllSaathi',)));
       }
     } else if (action == MLZS_READING_iNDEX) {
-      lunchExternalApp('com.application.freadom');
+      Subroot userinfo = widget.userInfo.root!.subroot!;
+      String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
+      FredomModel model =  FredomModel('+91', userinfo.userName!, userinfo.userId!, 'Android', userinfo.userType!='TEACH' ? true : false, userinfo.branchList![0].branchName!, school_class);
+      print('original Data ${model.toJson()}');
+      print('encoded Data ${utf8.encode(model.toJson())}');
+      applaunchUrl(Uri.parse("freadomapp://?data=${utf8.encode(model.toJson())}"));
     } else if (action == MYSCHOOLiNDEX) {
       lunchExternalApp('com.innova.students_mlz_epfuture');
     } else if (action == TEACHER_OPERATION_iNDEX) {
