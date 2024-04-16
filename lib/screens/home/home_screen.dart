@@ -16,9 +16,13 @@ import 'package:literahub/screens/login/login_screen.dart';
 import 'package:literahub/widgets/myweb.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../apis/ServiceHandler.dart';
+import '../../apis/request/fradomdeeplink.dart';
+import '../../apis/response/fradom_response.dart';
 import '../../core/constant/LocalConstant.dart';
 import '../../core/theme/light_colors.dart';
 import '../../core/utility.dart';
+import '../../iface/onResponse.dart';
 import '../../model/user.dart';
 import '../../widgets/dropdown.dart';
 
@@ -36,7 +40,7 @@ class HomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<HomePage>
     with TickerProviderStateMixin, WidgetsBindingObserver
-    implements onClickListener {
+    implements onClickListener, onResponse {
   final int MYSCHOOLiNDEX = 0;
   final int TEACHER_OPERATION_iNDEX = 1;
   final int SCHOOL_OPERATION_iNDEX = 2;
@@ -284,11 +288,7 @@ class _MyHomePageState extends State<HomePage>
           ),
           InkWell(
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginScreen(),
-                  ));
+              signOut();
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -347,6 +347,16 @@ class _MyHomePageState extends State<HomePage>
         });
   }
 
+  signOut() async{
+    var box = await Utility.openBox();
+    box.clear();
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+        ));
+  }
+
   getBranch(){
 
   }
@@ -385,11 +395,16 @@ class _MyHomePageState extends State<HomePage>
       }
     } else if (action == MLZS_READING_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
-      String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
-      FredomModel model =  FredomModel('+91', userinfo.userName!, userinfo.userId!, 'Android', userinfo.userType!='TEACH' ? true : false, userinfo.branchList![0].branchName!, school_class);
+      //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
+      String grade  = userinfo.branchList![0].batchList!.batchName!.split('/')[1].trim();
+
+      GetFradomDeepLink request = GetFradomDeepLink(name:userinfo.userName!,grade:'Grade ${grade}',schoolCode:'mxxbjk',deviceType: 'Android',description:'MH',schoolClass:grade,countryCode:'+91',email:'test@zeelearn.com',age:'',siblings:[], contactNo: lettersToIndex(userinfo.userId!).toString(), userType: userinfo.userType!, schoolClassList: [SchoolClass(schoolClass: 'A'),SchoolClass(schoolClass: grade)]);
+      /*FredomModel model =  FredomModel('+91', userinfo.userName!, userinfo.userId!, 'Android', userinfo.userType!='TEACH' ? true : false, userinfo.branchList![0].branchName!, school_class);
       print('original Data ${model.toJson()}');
       print('encoded Data ${utf8.encode(model.toJson())}');
-      applaunchUrl(Uri.parse("freadomapp://?data=${utf8.encode(model.toJson())}"));
+      applaunchUrl(Uri.parse("freadomapp://?data=${utf8.encode(model.toJson())}"));*/
+      ApiServiceHandler().getFradomLink(request, this);
+
     } else if (action == MYSCHOOLiNDEX) {
       lunchExternalApp('com.innova.students_mlz_epfuture');
     } else if (action == TEACHER_OPERATION_iNDEX) {
@@ -407,6 +422,14 @@ class _MyHomePageState extends State<HomePage>
     }
   }
 
+  int lettersToIndex(String letters) {
+    var result = 0;
+    for (var i = 0; i < letters.length; i++) {
+      result = result * 10 + (letters.codeUnitAt(i) & 0x1f);
+    }
+    return result;
+  }
+
   lunchExternalApp(String package) async {
     try {
       ///checks if the app is installed on your mobile device
@@ -422,6 +445,35 @@ class _MyHomePageState extends State<HomePage>
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  @override
+  void onError(int action, value) {
+    Navigator.of(context).pop();
+  }
+
+  @override
+  void onStart() {
+    Utility.showLoaderDialog(context);
+  }
+
+  openFradomApp(String url) async{
+    // Check if Spotify is installed
+    if (await canLaunchUrl(Uri.parse(url))) {
+    // Launch the url which will open Spotify
+    launchUrl(Uri.parse(url));
+    }
+  }
+
+  @override
+  void onSuccess(value) {
+    Navigator.of(context).pop();
+    if(value is FradomLinkResponse){
+      FradomLinkResponse response = value;
+      if(response!=null && response.result!=null && response.result!.data!=null){
+        openFradomApp(response.result!.data!);
+      }
     }
   }
 }
