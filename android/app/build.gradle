@@ -42,10 +42,10 @@ android {
 
     signingConfigs{
         release {
-            storeFile file('..\\eKidzeeAppKey.jks')
-            storePassword 'nikunj'
-            keyAlias = 'nikunj'
-            keyPassword 'nikunj'
+            storeFile file('..\\zeelearn.jks')
+            storePassword 'zils@1234'
+            keyAlias = 'mlzs'
+            keyPassword 'zils@1234'
         }
     }
 
