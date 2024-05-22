@@ -12,6 +12,7 @@ import 'package:literahub/model/MllModel.dart';
 import 'package:literahub/model/menuitem.dart';
 import 'package:literahub/screens/login/login_screen.dart';
 import 'package:literahub/widgets/myweb.dart';
+import 'package:saathi/zllsaathi.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../apis/ServiceHandler.dart';
@@ -415,27 +416,7 @@ class _MyHomePageState extends State<HomePage>
   void onClick(int action, value) {
     if (action == ZLL_SAATHI_iNDEX) {
       //lunchExternalApp('com.zeelearn.zllsaathi');
-      String userRole =
-          Utility.getUserRole(widget.userInfo.root!.subroot!.userRole!);
-      if (false && userRole.isEmpty) {
-        print(
-            'URL https://zllsaathi.zeelearn.com/dashboard?bu_id=${widget.userInfo!.root!.subroot!.uid}&b_id=2&r=${widget.userInfo.root!.subroot!.userRole!}&u_id=0');
-        Utility.showAlert(context,
-            'Zll Saathi currently not acciciable for your Role(${widget.userInfo.root!.subroot!.userRole})...');
-      } else {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MyWebViewScreen(
-                      url:
-                          'https://intranet-9fda2.web.app//dashboard?u_name=F2354',
-                      title: 'ZllSaathi',
-                    )));
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //       builder: (context) => MyWebViewScreen(url: 'https://zllsaathi.zeelearn.com/dashboard?bu_id=${widget.userInfo!.root!.subroot!.uid}&b_id=2&r=${userRole}&u_id=0', title: 'ZllSaathi',)));
-      }
+      ZllSaathi(context, widget.userInfo.root!.subroot!.userName!, null);
     } else if (action == MLZS_READING_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
       //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
