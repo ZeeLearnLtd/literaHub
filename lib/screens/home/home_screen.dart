@@ -63,6 +63,7 @@ class _MyHomePageState extends State<HomePage>
 
   List<HomeMenuItem> menuItems = [];
   UserResponse? userinfo;
+  BranchList? _selectedBranch=null;
 
   @override
   void initState() {
@@ -122,6 +123,7 @@ class _MyHomePageState extends State<HomePage>
         appBar: /*_selectedDestination == MENU_LEARNING_GOAL ? null :*/
             getAppbar(),
         bottomNavigationBar: footer(),
+        resizeToAvoidBottomInset: true,
         body: getScreen(),
       ),
     );
@@ -329,40 +331,47 @@ class _MyHomePageState extends State<HomePage>
   TextEditingController batchController = TextEditingController();
   TextEditingController branchController = TextEditingController();
   showClassSelection() {
+    print(userinfo!.root!.subroot!.branchList!.length);
     showModalBottomSheet(
         context: context,
         builder: (context) {
           return Container(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
             margin: EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text('Select School'),
                 ZeeDropDown(
+                  textStyle: LightColors.textHeaderStyle,
                   title: 'Select School',
                   textController: batchController,
                   hintText: 'Select School',
-                  enable: false,
                   items: userinfo!.root!.subroot!.branchList!,
                   displayFunction: (p0) => '${p0.branchName ?? ''}}',
                   onChanged: (p0) {
                     if (p0 != null) {
+                      _selectedBranch = p0!;
+                      print(_selectedBranch!.batchList);
                       batchController.text = p0!.branchName!;
+                      setState(() {
+
+                      });
                     } else {
                       //selectedFilterFranchisee = p0;
                     }
                   },
                 ),
+                if(_selectedBranch!=null && _selectedBranch!.batchList != null)
                 ZeeDropDown(
                   title: 'Select Branch',
                   textController: branchController,
                   hintText: 'Select Branch',
-                  enable: false,
-                  items: userinfo!.root!.subroot!.branchList!,
-                  displayFunction: (p0) => '${p0.branchName ?? ''}}',
+                  items: _selectedBranch!.batchList!,
+                  displayFunction: (p0) => '${p0!.batchName ?? ''}}',
                   onChanged: (p0) {
                     if (p0 != null) {
-                      batchController.text = p0!.branchName!;
+                      batchController.text = p0!.batchName!;
                     } else {
                       //selectedFilterFranchisee = p0;
                     }
@@ -403,8 +412,7 @@ class _MyHomePageState extends State<HomePage>
   openMllApp(String packageName) async {
     Subroot userinfo = widget.userInfo.root!.subroot!;
     //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
-    String grade =
-        userinfo.branchList![0].batchList!.batchName!.split('/')[1].trim();
+    String grade = userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
 
     MLLModel model = MLLModel(userinfo.userId!, userinfo.userName!, '', '', '',
         '', userinfo.branchList![0].branchName!, grade, 'NA');
@@ -431,8 +439,7 @@ class _MyHomePageState extends State<HomePage>
     } else if (action == MLZS_READING_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
       //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
-      String grade =
-          userinfo.branchList![0].batchList!.batchName!.split('/')[1].trim();
+      String grade = userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
 
       GetFradomDeepLink request = GetFradomDeepLink(
           name: userinfo.userName!,
@@ -445,11 +452,13 @@ class _MyHomePageState extends State<HomePage>
           email: 'test@zeelearn.com',
           age: '',
           siblings: [],
+          isTeacher: userinfo.userType=='Teacher' ? true : false,
           contactNo: lettersToIndex(userinfo.userId!).toString(),
           userType: userinfo.userType!,
           schoolClassList: [
-            SchoolClass(schoolClass: 'A'),
-            SchoolClass(schoolClass: grade)
+
+            SchoolClass(schoolClass: grade),
+            //SchoolClass(schoolClass: 'B'),
           ]);
       /*FredomModel model =  FredomModel('+91', userinfo.userName!, userinfo.userId!, 'Android', userinfo.userType!='TEACH' ? true : false, userinfo.branchList![0].branchName!, school_class);
       print('original Data ${model.toJson()}');

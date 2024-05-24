@@ -96,6 +96,7 @@ class Subroot {
       branchList = <BranchList>[];
       branchList!.add(new BranchList.fromJson(json['branch_list']));
     }
+    print('branch list is ${branchList}');
   }
 
   Map<String, dynamic> toJson() {
@@ -124,7 +125,7 @@ class BranchList {
   String? branchId;
   String? branchName;
   String? schoolgroup;
-  BatchList? batchList;
+  List<BatchList?>? batchList;
 
   BranchList(
       {this.branchId, this.branchName, this.schoolgroup, this.batchList});
@@ -133,9 +134,18 @@ class BranchList {
     branchId = json['branch_id'];
     branchName = json['branch_name'];
     schoolgroup = json['schoolgroup'] ;
-    batchList = json['batch_list'] != null
-        ? new BatchList.fromJson(json['batch_list'])
-        : null;
+
+    try{
+      if (json['batch_list'] != null) {
+        batchList = <BatchList>[];
+        json['batch_list'].forEach((v) {
+          batchList!.add(new BatchList.fromJson(v));
+        });
+      }
+    }catch(e){
+      batchList = <BatchList>[];
+      batchList!.add(new BatchList.fromJson(json['batch_list']));
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -144,7 +154,7 @@ class BranchList {
     data['branch_name'] = this.branchName;
     data['schoolgroup'] = this.schoolgroup;
     if (this.batchList != null) {
-      data['batch_list'] = this.batchList!.toJson();
+      data['batch_list'] = this.batchList!.map((v) => v?.toJson()).toList();
     }
     return data;
   }

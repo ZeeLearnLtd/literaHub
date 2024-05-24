@@ -12,6 +12,7 @@ class GetFradomDeepLink {
   late String email;
   late String age;
   late String userType;
+  late bool isTeacher;
   late List<Siblings> siblings;
   late List<SchoolClass> schoolClassList;
 
@@ -28,6 +29,7 @@ class GetFradomDeepLink {
         required this.age,
         required this.userType,
         required this.schoolClassList,
+        required this.isTeacher,
         required this.siblings});
 
   GetFradomDeepLink.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class GetFradomDeepLink {
     schoolClass = json['school_class'];
     countryCode = json['country_code'];
     email = json['email'];
+    isTeacher = json['is_teacher'];
     userType = json['userType'];
     age = json['age'];
     if (json['siblings'] != null) {
@@ -59,7 +62,9 @@ class GetFradomDeepLink {
         'contact_no': this.contactNo,
         'device_type': this.deviceType,
         'description': this.description,
-        'school_class':this.schoolClassList!.map((v) => this.schoolClass).toList(),
+        'school_class': this.schoolClassList[0].schoolClass,// this.schoolClassList!.map((v) => this.schoolClass).toList(),
+        'is_teacher':true,
+
         //'country_code': this.countryCode,
         //'email': this.email,
         //'age': this.age,

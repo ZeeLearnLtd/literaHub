@@ -112,7 +112,7 @@ class SimpleAccountMenuState<T> extends State<ZeeDropDown<T>>
         }
       },
       child: Container(
-          height: Responsive.isMobile(context) ? 35 : 30,
+          height: Responsive.isMobile(context) ? 55 : 30,
           //width: 80,
           padding: const EdgeInsets.only(left: 10, top: 0),
           key: _key,
