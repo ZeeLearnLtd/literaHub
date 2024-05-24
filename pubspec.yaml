@@ -52,7 +52,7 @@ dependencies:
   flutter_webview_pro: ^3.0.1+4
   external_app_launcher: ^4.0.0
   saathi:
-    path: ../ZeeSathi/
+    path: D:\Sudhir\flutterWorkspace\reseaarch\ZeeSathi\
 
 dev_dependencies:
   flutter_test:

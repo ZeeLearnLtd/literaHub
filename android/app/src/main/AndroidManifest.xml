@@ -5,6 +5,7 @@
    <package android:name="com.innova.students_mlz_epfuture" />
    <package android:name="epfuture.innova.com.teacher_mlz" />
    <package android:name="epfuture.innova.com.teacher_mlz" />
+    <package android:name="com.zeelearn.mlzsapp" />
  </queries>
 
  <queries>

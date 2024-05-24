@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:device_apps/device_apps.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,7 +13,6 @@ import 'package:literahub/model/MllModel.dart';
 import 'package:literahub/model/menuitem.dart';
 import 'package:literahub/screens/login/login_screen.dart';
 import 'package:literahub/widgets/myweb.dart';
-import 'package:saathi/zllsaathi.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../apis/ServiceHandler.dart';
@@ -409,14 +409,25 @@ class _MyHomePageState extends State<HomePage>
     MLLModel model = MLLModel(userinfo.userId!, userinfo.userName!, '', '', '',
         '', userinfo.branchList![0].branchName!, grade, 'NA');
     print(model.toJson());
-    launch("market://details?id=${packageName}?" + model.toJson());
+    bool isInstalled = await DeviceApps.isAppInstalled(packageName);
+    if (isInstalled) {
+      String encoded = base64.encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
+      String decoded = utf8.decode(base64.decode(encoded));
+      print('encode ${encoded}');
+      print('decoded ${decoded}');
+      applaunchUrl(Uri.parse("https://mlzsapp://?data=${encoded}"));
+    } else {
+      print('app not found');
+      launch("market://details?id=${packageName}?" + model.toJson());
+    }
+
   }
 
   @override
   void onClick(int action, value) {
     if (action == ZLL_SAATHI_iNDEX) {
       //lunchExternalApp('com.zeelearn.zllsaathi');
-      ZllSaathi(context, widget.userInfo.root!.subroot!.userName!, null);
+      //ZllSaathi(context, widget.userInfo.root!.subroot!.userName!, null);
     } else if (action == MLZS_READING_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
       //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
@@ -478,7 +489,7 @@ class _MyHomePageState extends State<HomePage>
       print(package);
       bool isInstalled = await DeviceApps.isAppInstalled(package);
       if (isInstalled) {
-        DeviceApps.openApp(package);
+
       } else {
         print('app not found');
 
