@@ -398,11 +398,12 @@ class _MyHomePageState extends State<HomePage>
       //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
       String grade  = userinfo.branchList![0].batchList!.batchName!.split('/')[1].trim();
 
-      GetFradomDeepLink request = GetFradomDeepLink(name:userinfo.userName!,grade:'Grade ${grade}',schoolCode:'mxxbjk',deviceType: 'Android',description:'MH',schoolClass:grade,countryCode:'+91',email:'test@zeelearn.com',age:'',siblings:[], contactNo: lettersToIndex(userinfo.userId!).toString(), userType: userinfo.userType!, schoolClassList: [SchoolClass(schoolClass: 'A'),SchoolClass(schoolClass: grade)]);
+      GetFradomDeepLink request = GetFradomDeepLink(name:userinfo.userName!,grade:'Grade ${getGrade(grade)}',schoolCode:'mxxbjk',deviceType: 'Android',description:'MH',schoolClass:grade.toUpperCase(),countryCode:'+91',email:'test@zeelearn.com',age:'',siblings:[], contactNo: lettersToIndex(userinfo.userId!).toString(), userType: userinfo.userType!, schoolClassList: [SchoolClass(schoolClass: grade.toUpperCase())]);
       /*FredomModel model =  FredomModel('+91', userinfo.userName!, userinfo.userId!, 'Android', userinfo.userType!='TEACH' ? true : false, userinfo.branchList![0].branchName!, school_class);
       print('original Data ${model.toJson()}');
       print('encoded Data ${utf8.encode(model.toJson())}');
       applaunchUrl(Uri.parse("freadomapp://?data=${utf8.encode(model.toJson())}"));*/
+      print(request.toJson());
       ApiServiceHandler().getFradomLink(request, this);
 
     } else if (action == MYSCHOOLiNDEX) {
@@ -420,6 +421,20 @@ class _MyHomePageState extends State<HomePage>
     } else {
       lunchExternalApp('com.zeelearn.saarthi');
     }
+  }
+
+  int getGrade(String value){
+    switch(value.toLowerCase()){
+      case "a":
+        return 1;
+      case "b":
+        return 2;
+      case "c":
+        return 3;
+      case "d":
+        return 4;
+    }
+    return 0;
   }
 
   int lettersToIndex(String letters) {
