@@ -254,6 +254,8 @@ class _LoginFormState extends State<LoginForm> implements onResponse{
           String json = jsonEncode(response);
           print(json);
           box.put(LocalConstant.KEY_LOGIN_RESPONSE, json);
+          box.put(LocalConstant.KEY_LOGIN_PASSWORD, userPasswordController.text.toString());
+          box.put(LocalConstant.KEY_LOGIN_USERNAME, userNameController.text.toString());
           Navigator.push(
           context,
           MaterialPageRoute(

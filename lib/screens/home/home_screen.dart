@@ -64,6 +64,8 @@ class _MyHomePageState extends State<HomePage>
   List<HomeMenuItem> menuItems = [];
   UserResponse? userinfo;
   BranchList? _selectedBranch=null;
+  String userPassword = '';
+  String userName='';
 
   @override
   void initState() {
@@ -75,23 +77,27 @@ class _MyHomePageState extends State<HomePage>
   getUserInfo() async {
     var box = await Utility.openBox();
     String json = box.get(LocalConstant.KEY_LOGIN_RESPONSE);
+    userName = box.get(LocalConstant.KEY_LOGIN_USERNAME);
+    userPassword = box.get(LocalConstant.KEY_LOGIN_PASSWORD);
     userinfo = UserResponse.fromJson(jsonDecode(json));
     print(userinfo!.toJson());
   }
 
   generateMenu() {
+    print('User Role ${widget.userInfo.root!.subroot!.userRole}');
     if (widget.userInfo.root!.subroot!.userRole == 'S-1-12') {
       getStudent1to12Menu();
     } else if (widget.userInfo.root!.subroot!.userRole == 'S-Pre-primary') {
       getStudentPrePrimaryMenu();
     } else if (widget.userInfo.root!.subroot!.userRole == 'TEACH-1-12') {
       getTeacher1to12Menu();
-    } else if (widget.userInfo.root!.subroot!.userRole == 'TEACH-Pre-primary') {
+    } else if (widget.userInfo.root!.subroot!.userRole == 'TEACH-Pre-primary' || widget.userInfo.root!.subroot!.userRole=='staff') {
       getTeacherPrePrimaryMenu();
     } else if (Utility.getUserRole(widget.userInfo.root!.subroot!.userRole!)
         .isNotEmpty) {
       getSystemAdminMenu();
     } else {
+      print('in else ');
       getSystemAdminMenu();
     }
   }
@@ -181,16 +187,14 @@ class _MyHomePageState extends State<HomePage>
       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
           STUDENT_ANALYTICS, 'studentanalytis'));
     } else {
-      menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
-          TEACHER_OPERATION, 'teachingoperation'));
-      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
-          EXTENDED_CLASSROOM, 'exclassroom'));
-      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
-          STUDENT_ANALYTICS, 'studentanalytis'));
-      menuItems.add(
-          HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-      menuItems.add(HomeMenuItem(
-          MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      // menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
+      //     TEACHER_OPERATION, 'teachingoperation'));
+      // menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
+      //     EXTENDED_CLASSROOM, 'exclassroom'));
+      // menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
+      //     STUDENT_ANALYTICS, 'studentanalytis'));
+      // menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     }
   }
 
@@ -409,13 +413,13 @@ class _MyHomePageState extends State<HomePage>
     // }
   }
 
-  openMllApp(String packageName) async {
+  openmlzs(String packageName) async {
     Subroot userinfo = widget.userInfo.root!.subroot!;
     //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
     String grade = userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
 
     MLLModel model = MLLModel(userinfo.userId!, userinfo.userName!, '', '', '',
-        '', userinfo.branchList![0].branchName!, grade, 'NA');
+        '', userinfo.branchList![0].branchName!, grade, userPassword);
     print(model.toJson());
     bool isInstalled = await DeviceApps.isAppInstalled(packageName);
     if (isInstalled) {
@@ -431,6 +435,28 @@ class _MyHomePageState extends State<HomePage>
 
   }
 
+  openMllApp(String packageName) async {
+    Subroot userinfo = widget.userInfo.root!.subroot!;
+    //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
+    String grade = userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
+
+    MLLModel model = MLLModel(userinfo.userId!, userinfo.userName!, '', '', '',
+        '', userinfo.branchList![0].branchName!, grade, userPassword);
+    print(model.toJson());
+    bool isInstalled = await DeviceApps.isAppInstalled(packageName);
+    if (isInstalled) {
+      String encoded = base64.encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
+      String decoded = utf8.decode(base64.decode(encoded));
+      print('encode ${encoded}');
+      print('decoded ${decoded}');
+      applaunchUrl(Uri.parse("epfapp://open?username=SMUL2187&password=SMUL2187"));
+    } else {
+      print('app not found');
+      launch("market://details?id=${packageName}?" + model.toJson());
+    }
+
+  }
+
   @override
   void onClick(int action, value) {
     if (action == ZLL_SAATHI_iNDEX) {
@@ -439,15 +465,18 @@ class _MyHomePageState extends State<HomePage>
     } else if (action == MLZS_READING_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
       //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
-      String grade = userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
+      String grade = userinfo.userType=='Teacher' ? userinfo.branchList![0].batchList![0]!.batchName!.split('/')[0].trim() :  userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
+      String className = userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
+      print('Grade is ${grade}  ${className}');
+      grade =grade.replaceAll('CLASS', '');
 
       GetFradomDeepLink request = GetFradomDeepLink(
           name: userinfo.userName!,
-          grade: 'Grade ${grade}',
+          grade: 'Grade ${grade.trim()}',
           schoolCode: 'mxxbjk',
           deviceType: 'Android',
           description: 'MH',
-          schoolClass: grade,
+          schoolClass: userinfo.userType=='Teacher' ? className : grade,
           countryCode: '+91',
           email: 'test@zeelearn.com',
           age: '',
@@ -457,7 +486,7 @@ class _MyHomePageState extends State<HomePage>
           userType: userinfo.userType!,
           schoolClassList: [
 
-            SchoolClass(schoolClass: grade),
+            SchoolClass(schoolClass: userinfo.userType=='Teacher' ? className : grade),
             //SchoolClass(schoolClass: 'B'),
           ]);
       /*FredomModel model =  FredomModel('+91', userinfo.userName!, userinfo.userId!, 'Android', userinfo.userType!='TEACH' ? true : false, userinfo.branchList![0].branchName!, school_class);
@@ -468,16 +497,17 @@ class _MyHomePageState extends State<HomePage>
     } else if (action == MYSCHOOLiNDEX) {
       lunchExternalApp('com.innova.students_mlz_epfuture');
     } else if (action == TEACHER_OPERATION_iNDEX) {
-      lunchExternalApp('epfuture.innova.com.teacher_mlz');
+      openMllApp('com.innova.students_mlz_epfuture');
+      //lunchExternalApp('epfuture.innova.com.teacher_mlz');
     } else if (action == EXTENDED_CLASSROOM_iNDEX) {
-      openMllApp("com.zeelearn.mlzsapp");
+      openmlzs("com.zeelearn.mlzsapp");
       //lunchExternalApp('com.innova.studentsmlz');
     } else if (action == PENTEMIND_iNDEX) {
       lunchExternalApp('com.zeelearn.ekidzee');
     } else if (action == SCHOOL_OPERATION_iNDEX) {
-      lunchExternalApp('com.innova.mis_ep_future');
+      openMllApp('com.innova.mis_ep_future');
     } else if (action == STUDENT_ANALYTICS_iNDEX) {
-      openMllApp("com.zeelearn.mlzsapp");
+      openmlzs("com.zeelearn.mlzsapp");
       //lunchExternalApp('epfuture.innova.com.teacher_mlz');
     } else {
       lunchExternalApp('com.zeelearn.saarthi');
