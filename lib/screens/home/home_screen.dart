@@ -5,6 +5,7 @@ import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_common/get_reset.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:literahub/apis/response/user_response.dart';
 import 'package:literahub/globals.dart';
@@ -316,7 +317,7 @@ class _MyHomePageState extends State<HomePage>
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
-                children: [Text('Class '), Icon(Icons.arrow_drop_down)],
+                children: [Text(branchController.text.toString().isNotEmpty ? branchController.text.toString() :  'Class ',style: LightColors.subtitleStyle10White,), Icon(Icons.arrow_drop_down,color: Colors.white,)],
               ),
             ),
           ),
@@ -326,7 +327,7 @@ class _MyHomePageState extends State<HomePage>
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Icon(Icons.logout),
+              child: Icon(Icons.logout,color: Colors.white,),
             ),
           )
         ]);
@@ -375,12 +376,14 @@ class _MyHomePageState extends State<HomePage>
                   displayFunction: (p0) => '${p0!.batchName ?? ''}}',
                   onChanged: (p0) {
                     if (p0 != null) {
-                      batchController.text = p0!.batchName!;
+                      branchController.text = p0!.batchName!;
                     } else {
                       //selectedFilterFranchisee = p0;
                     }
                   },
                 ),
+
+                SizedBox(height: 100,)
               ],
             ),
           );
@@ -389,7 +392,7 @@ class _MyHomePageState extends State<HomePage>
 
   signOut() async {
     var box = await Utility.openBox();
-    box.clear();
+    await box.clear();
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -413,12 +416,12 @@ class _MyHomePageState extends State<HomePage>
     // }
   }
 
-  openmlzs(String packageName) async {
+  openmlzs(String packageName,String schema) async {
     Subroot userinfo = widget.userInfo.root!.subroot!;
     //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
     String grade = userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
 
-    MLLModel model = MLLModel(userinfo.userId!, userinfo.userName!, '', '', '',
+    MLLModel model = MLLModel(userinfo.userId!, userinfo.userName!,userName, '', '', '',
         '', userinfo.branchList![0].branchName!, grade, userPassword);
     print(model.toJson());
     bool isInstalled = await DeviceApps.isAppInstalled(packageName);
@@ -427,7 +430,7 @@ class _MyHomePageState extends State<HomePage>
       String decoded = utf8.decode(base64.decode(encoded));
       print('encode ${encoded}');
       print('decoded ${decoded}');
-      applaunchUrl(Uri.parse("https://mlzsapp://?data=${encoded}"));
+      applaunchUrl(Uri.parse("https://${schema}://?data=${encoded}"));
     } else {
       print('app not found');
       launch("market://details?id=${packageName}?" + model.toJson());
@@ -440,7 +443,7 @@ class _MyHomePageState extends State<HomePage>
     //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
     String grade = userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
 
-    MLLModel model = MLLModel(userinfo.userId!, userinfo.userName!, '', '', '',
+    MLLModel model = MLLModel(userinfo.userId!, userinfo.userName!, userName,'', '', '',
         '', userinfo.branchList![0].branchName!, grade, userPassword);
     print(model.toJson());
     bool isInstalled = await DeviceApps.isAppInstalled(packageName);
@@ -467,13 +470,13 @@ class _MyHomePageState extends State<HomePage>
       //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
       String grade = userinfo.userType=='Teacher' ? userinfo.branchList![0].batchList![0]!.batchName!.split('/')[0].trim() :  userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
       String className = userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
-      print('Grade is ${grade}  ${className}');
+     // print('Grade is ${grade}  ${className}');
       grade =grade.replaceAll('CLASS', '');
 
       GetFradomDeepLink request = GetFradomDeepLink(
           name: userinfo.userName!,
-          grade: 'Grade ${grade.trim()}',
-          schoolCode: 'mxxbjk',
+          grade: userinfo.userType=='Teacher' ? 'Grade ${grade.trim()}' : 'Grade ${grade.trim()}',
+          schoolCode: getSchoolCode(userinfo.branchList![0].branchName!),
           deviceType: 'Android',
           description: 'MH',
           schoolClass: userinfo.userType=='Teacher' ? className : grade,
@@ -493,6 +496,9 @@ class _MyHomePageState extends State<HomePage>
       print('original Data ${model.toJson()}');
       print('encoded Data ${utf8.encode(model.toJson())}');
       applaunchUrl(Uri.parse("freadomapp://?data=${utf8.encode(model.toJson())}"));*/
+
+      //print('code  ');
+     // print(request.toJson());
       ApiServiceHandler().getFradomLink(request, this);
     } else if (action == MYSCHOOLiNDEX) {
       lunchExternalApp('com.innova.students_mlz_epfuture');
@@ -500,18 +506,34 @@ class _MyHomePageState extends State<HomePage>
       openMllApp('com.innova.students_mlz_epfuture');
       //lunchExternalApp('epfuture.innova.com.teacher_mlz');
     } else if (action == EXTENDED_CLASSROOM_iNDEX) {
-      openmlzs("com.zeelearn.mlzsapp");
+      openmlzs("com.zeelearn.mlzstapp","mlzstapp");
       //lunchExternalApp('com.innova.studentsmlz');
     } else if (action == PENTEMIND_iNDEX) {
       lunchExternalApp('com.zeelearn.ekidzee');
     } else if (action == SCHOOL_OPERATION_iNDEX) {
       openMllApp('com.innova.mis_ep_future');
     } else if (action == STUDENT_ANALYTICS_iNDEX) {
-      openmlzs("com.zeelearn.mlzsapp");
+      openmlzs("com.zeelearn.mlzsapp","mlzsapp");
       //lunchExternalApp('epfuture.innova.com.teacher_mlz');
     } else {
       lunchExternalApp('com.zeelearn.saarthi');
     }
+  }
+
+  String getSchoolCode(String school){
+    String code = "mxxbjk";
+    if(school.toLowerCase().contains('goa')){
+      code = 'mxxbjk';
+    }else if(school.toLowerCase().contains('nagpur')){
+      code = 'skttcj';
+    }else if(school.toLowerCase().contains('patiala')){
+      code = 'gwqfhm';
+    }else if(school.toLowerCase().contains('karnal')){
+      code = 'unbhzy';
+    }else if(school.toLowerCase().contains('bathinda')){
+      code = 'mawjwn';
+    }
+    return code;
   }
 
   int lettersToIndex(String letters) {

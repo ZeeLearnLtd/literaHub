@@ -2,6 +2,7 @@ import 'dart:convert';
 
 class MLLModel {
   late final String id;
+  late final String userName;
   late final String name;
   late final String contact_no;
   late final String father_name;
@@ -11,13 +12,14 @@ class MLLModel {
   late final String school_class;
   late final String access_code;
 
-  MLLModel(this.id, this.name, this.contact_no, this.email, this.father_name,
+  MLLModel(this.id, this.name,this.userName, this.contact_no, this.email, this.father_name,
       this.city, this.school, this.school_class, this.access_code);
 
   toJson() {
     return jsonEncode({
       'id': this.id,
       'name': this.name,
+      'user_name': this.userName,
       'contact_no': this.contact_no,
       'father_name': this.father_name,
       'email': this.email,

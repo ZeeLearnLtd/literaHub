@@ -125,11 +125,13 @@ class SimpleAccountMenuState<T> extends State<ZeeDropDown<T>>
           ),
           child: /* true
             ?  */
-          Container(
+          InkWell(
+            onTap: () => openMenu(),
             child: TextFormField(
-              enabled: widget.enable,
+              enabled: false,
               style: widget.textStyle ?? LightColors.subtitleStyle10,
               controller: widget.textController,
+
               onChanged: (val) {
                 debugPrint(
                     'OnChanged for search in dropdown is - $val  ${widget.displayFunction(_subFilteredList[0])} ');
@@ -161,16 +163,6 @@ class SimpleAccountMenuState<T> extends State<ZeeDropDown<T>>
                 contentPadding:
                 const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                 isDense: true,
-                /* suffixIconConstraints:
-                      BoxConstraints.loose(MediaQuery.of(context).size),
-                  suffix: InkWell(
-                      onTap: () {
-                        widget.textController!.clear();
-                        openMenu();
-                        setState(() => _filteredList = widget.items);
-                      },
-                      child: Icon(Icons.clear,
-                          size: 12, color: Colors.grey.withOpacity(0.5))) */
               ),
             ),
           )),
