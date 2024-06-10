@@ -11,7 +11,7 @@ class LocalConstant {
   static String notificationTopicName = 'saathi';
   static const String LITERAHUB = "literahub";
 
-  static const flavor = "MLL";
+  static const flavor = "";
 
   static const String KEY_LOGIN_RESPONSE = "userinfo";
   static const String KEY_LOGIN_PASSWORD = "password";

@@ -157,12 +157,12 @@ class _MyHomePageState extends State<HomePage>
       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
           STUDENT_ANALYTICS, 'studentanalytis'));
     } else {
-      menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
-          TEACHER_OPERATION, 'teachingoperation'));
-      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
-          EXTENDED_CLASSROOM, 'exclassroom'));
-      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
-          STUDENT_ANALYTICS, 'studentanalytis'));
+      // menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
+      //     TEACHER_OPERATION, 'teachingoperation'));
+      // menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
+      //     EXTENDED_CLASSROOM, 'exclassroom'));
+      // menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
+      //     STUDENT_ANALYTICS, 'studentanalytis'));
       menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     }
@@ -175,8 +175,7 @@ class _MyHomePageState extends State<HomePage>
           EXTENDED_CLASSROOM, 'exclassroom'));
     } else {
       menuItems.add(HomeMenuItem(MYSCHOOLiNDEX, MYSCHOOL, MYSCHOOL, 'myclass'));
-      menuItems.add(
-          HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
     }
   }
 
@@ -207,18 +206,18 @@ class _MyHomePageState extends State<HomePage>
       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
           STUDENT_ANALYTICS, 'studentanalytis'));
     } else {
-      menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
-          TEACHER_OPERATION, 'teachingoperation'));
-      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
-          EXTENDED_CLASSROOM, 'exclassroom'));
-      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
-          STUDENT_ANALYTICS, 'studentanalytis'));
-      menuItems.add(
-          HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      // menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
+      //     TEACHER_OPERATION, 'teachingoperation'));
+      // menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
+      //     EXTENDED_CLASSROOM, 'exclassroom'));
+      // menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
+      //     STUDENT_ANALYTICS, 'studentanalytis'));
+      // menuItems.add(
+      //     HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
       menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
-      menuItems.add(
-          HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+      // menuItems.add(
+      //     HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
     }
   }
 
@@ -472,10 +471,11 @@ class _MyHomePageState extends State<HomePage>
       String className = userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
      // print('Grade is ${grade}  ${className}');
       grade =grade.replaceAll('CLASS', '');
-
+      String mGrade = userinfo.branchList![0].batchList![0]!.batchName!.split('/')[0].trim();
+      mGrade =mGrade.replaceAll('CLASS', '');
       GetFradomDeepLink request = GetFradomDeepLink(
           name: userinfo.userName!,
-          grade: userinfo.userType=='Teacher' ? 'Grade ${grade.trim()}' : 'Grade ${grade.trim()}',
+          grade: /*userinfo.userType=='Teacher' ? */'Grade ${mGrade.trim()}'/* : 'Grade ${grade.trim()}'*/,
           schoolCode: getSchoolCode(userinfo.branchList![0].branchName!),
           deviceType: 'Android',
           description: 'MH',
