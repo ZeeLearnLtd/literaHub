@@ -11,6 +11,7 @@ import 'package:literahub/iface/onClick.dart';
 import 'package:literahub/model/MllModel.dart';
 import 'package:literahub/model/menuitem.dart';
 import 'package:literahub/screens/login/login_screen.dart';
+import 'package:saathi/zllsaathi.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../apis/ServiceHandler.dart';
@@ -498,7 +499,8 @@ class _MyHomePageState extends State<HomePage>
   @override
   void onClick(int action, value) {
     if (action == ZLL_SAATHI_iNDEX) {
-      ZllSaathi(context, widget.userInfo.root!.subroot!.userName!, null);
+      print('------UName   ${userName}');
+      ZllSaathi(context,userName, null);
     } else if (action == MLZS_READING_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
       //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
