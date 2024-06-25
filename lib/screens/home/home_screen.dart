@@ -498,7 +498,7 @@ class _MyHomePageState extends State<HomePage>
   @override
   void onClick(int action, value) {
     if (action == ZLL_SAATHI_iNDEX) {
-      ZllSaathi(context, widget.userInfo.root!.subroot!.userName!, null);
+      //ZllSaathi(context, widget.userInfo.root!.subroot!.userName!, null);
     } else if (action == MLZS_READING_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
       //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
