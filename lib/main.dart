@@ -1,5 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:literahub/firebase_options.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import 'core/route/customRouter.dart';
@@ -7,7 +9,11 @@ import 'core/route/routeConstant.dart';
 import 'core/theme/themeController.dart';
 import 'screens/login/login_screen.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 

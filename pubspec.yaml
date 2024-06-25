@@ -49,20 +49,20 @@ dependencies:
   flutter_bloc: ^8.1.5
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  flutter_webview_pro: ^3.0.1+4
   external_app_launcher: ^4.0.0
   saathi:
-    path: D:\Sudhir\flutterWorkspace\ZllSaathiNative\ZeeSathi\
+    path: ../ZeeSathi/
 
 dependency_overrides:
   device_info_plus: ^10.0.0
-  flutter_quill: ^9.3.21
+  win32: ^5.4.0
+  http: ^0.13.3
+  #package_info_plus: ^8.0.0
+  lottie: ^3.0.0
   intl: ^0.19.0
-  http: ^1.1.2
-  file_picker: ^6.1.1
-  pdfx: ^2.6.0
+  awesome_notifications: ^0.9.1
+  file_picker: ^8.0.5
   photo_view: ^0.15.0
-  js: ^0.7.1
 
 dev_dependencies:
   flutter_test:

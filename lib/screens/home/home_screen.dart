@@ -11,6 +11,7 @@ import 'package:literahub/iface/onClick.dart';
 import 'package:literahub/model/MllModel.dart';
 import 'package:literahub/model/menuitem.dart';
 import 'package:literahub/screens/login/login_screen.dart';
+import 'package:saathi/zllsaathi.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../apis/ServiceHandler.dart';
@@ -68,7 +69,6 @@ class _MyHomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-    generateMenu();
     getUserInfo();
   }
 
@@ -79,11 +79,14 @@ class _MyHomePageState extends State<HomePage>
     userPassword = box.get(LocalConstant.KEY_LOGIN_PASSWORD);
     userinfo = UserResponse.fromJson(jsonDecode(json));
     print(userinfo!.toJson());
+    generateMenu();
   }
 
   generateMenu() {
-    print('User Role ${widget.userInfo.root!.subroot!.userRole}');
-    if (widget.userInfo.root!.subroot!.userRole == 'S-1-12') {
+    //print('User Role ${widget.userInfo.root!.subroot!.userRole}');
+    if (userName == 'MGMT1001') {
+      getGPMenu();
+    }else if (widget.userInfo.root!.subroot!.userRole == 'S-1-12') {
       getStudent1to12Menu();
     } else if (widget.userInfo.root!.subroot!.userRole == 'S-Pre-primary') {
       getStudentPrePrimaryMenu();
@@ -147,6 +150,11 @@ class _MyHomePageState extends State<HomePage>
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
       //menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     }
+  }
+
+  getGPMenu() {
+    menuItems.clear();
+    menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
   }
 
   getTeacher1to12Menu() {
@@ -498,7 +506,8 @@ class _MyHomePageState extends State<HomePage>
   @override
   void onClick(int action, value) {
     if (action == ZLL_SAATHI_iNDEX) {
-      //ZllSaathi(context, widget.userInfo.root!.subroot!.userName!, null);
+      print('------UName   ${userName}');
+      ZllSaathi(context,'F2354', null);
     } else if (action == MLZS_READING_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
       //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();

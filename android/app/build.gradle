@@ -1,5 +1,8 @@
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
+    id 'com.google.gms.google-services'
+    // END: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -42,9 +45,9 @@ android {
 
     signingConfigs{
         release {
-            storeFile file('..\\zeelearn.jks')
+            storeFile file('..\\zeelearn_android.jks')
             storePassword 'zils@1234'
-            keyAlias = 'mlzs'
+            keyAlias = 'literiahub'
             keyPassword 'zils@1234'
         }
     }
@@ -54,9 +57,9 @@ android {
         applicationId "com.zeelearn.literahub"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
+        versionCode 3
         versionName flutterVersionName
         multiDexEnabled true
         signingConfig signingConfigs.release

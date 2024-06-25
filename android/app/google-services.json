@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "75203046548",
+    "project_id": "literahub-8706f",
+    "storage_bucket": "literahub-8706f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75203046548:android:ab6a4173f740ffa3d45881",
+        "android_client_info": {
+          "package_name": "com.example.literahub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuycNu2z42Xx-VVuOMBa3nzF_skD_nDNg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75203046548:android:5e56b8f0a606f9f5d45881",
+        "android_client_info": {
+          "package_name": "com.zeelearn.literahub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuycNu2z42Xx-VVuOMBa3nzF_skD_nDNg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
