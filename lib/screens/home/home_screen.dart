@@ -78,14 +78,47 @@ class _MyHomePageState extends State<HomePage>
     userName = box.get(LocalConstant.KEY_LOGIN_USERNAME);
     userPassword = box.get(LocalConstant.KEY_LOGIN_PASSWORD);
     userinfo = UserResponse.fromJson(jsonDecode(json));
+    if(userinfo!=null && userinfo!.root!=null && userinfo!.root!.subroot!=null && userinfo!.root!.subroot!.branchList!=null){
+      _selectedBranch = userinfo!.root!.subroot!.branchList![0];
+    }
     print(userinfo!.toJson());
     generateMenu();
   }
 
   generateMenu() {
-    //print('User Role ${widget.userInfo.root!.subroot!.userRole}');
+    print('User Role ${widget.userInfo.root!.subroot!.userRole}');
     if (userName == 'MGMT1001') {
       getGPMenu();
+    }else if (widget.userInfo.root!.subroot!.userRole!.toLowerCase() == 'principal') {
+      getPrincipalMenu();
+    }else if (widget.userInfo.root!.subroot!.userRole!.toLowerCase() == 'f' || widget.userInfo.root!.subroot!.userRole!.toLowerCase() == 'business partner') {
+      getBusinessPartnerMenu();
+    }else if (widget.userInfo.root!.subroot!.userRole!.toLowerCase().contains('teach')) {
+      print('in 94 teacher found');
+      if(_selectedBranch!=null){
+            if(_selectedBranch!.schoolgroup!.toLowerCase().contains('k5') || _selectedBranch!.schoolgroup!.toLowerCase().contains('k12')){
+              //1 to 12 class
+              getTeacher1to12Menu();
+            }else{
+              //pre-primary
+              getTeacherPrePrimaryMenu();
+            }
+      }else{
+        print('in 104 batch not selected');
+        //Dashboard menu not for your role
+      }
+    }else if (widget.userInfo.root!.subroot!.userRole!.toLowerCase().contains('stud')) {
+      if(_selectedBranch!=null){
+            if(_selectedBranch!.schoolgroup!.toLowerCase().contains('k5') || _selectedBranch!.schoolgroup!.toLowerCase().contains('k12')){
+              //1 to 12 class
+              getStudent1to12Menu();
+            }else{
+              //pre-primary
+              getTeacherPrePrimaryMenu();
+            }
+      }else{
+        //Dashboard menu not for your role
+      }
     }else if (widget.userInfo.root!.subroot!.userRole == 'S-1-12') {
       getStudent1to12Menu();
     } else if (widget.userInfo.root!.subroot!.userRole == 'S-Pre-primary') {
@@ -204,9 +237,34 @@ class _MyHomePageState extends State<HomePage>
       // menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
       //     STUDENT_ANALYTICS, 'studentanalytis'));
       // menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-      menuItems.add(HomeMenuItem(
-          MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     }
+  }
+
+  getPrincipalMenu(){
+    menuItems.clear();
+    menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,TEACHER_OPERATION, 'teachingoperation'));
+    menuItems.add(HomeMenuItem(SCHOOL_OPERATION_iNDEX, SCHOOL_OPERATION,SCHOOL_OPERATION, 'schooloperation'));
+    menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));  
+    menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
+    menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+    menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+    setState(() {
+      
+    });
+  }
+
+  getBusinessPartnerMenu(){
+    menuItems.clear();
+    menuItems.add(HomeMenuItem(SCHOOL_OPERATION_iNDEX, SCHOOL_OPERATION,SCHOOL_OPERATION, 'schooloperation'));
+    menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));  
+    menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
+    menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+    menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+    menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+    setState(() {
+      
+    });
   }
 
   getSystemAdminMenu() {
