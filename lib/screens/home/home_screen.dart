@@ -1,5 +1,6 @@
+import 'dart:convert';
+
 import 'package:device_apps/device_apps.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,15 +8,20 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:literahub/apis/response/user_response.dart';
 import 'package:literahub/globals.dart';
 import 'package:literahub/iface/onClick.dart';
+import 'package:literahub/model/MllModel.dart';
 import 'package:literahub/model/menuitem.dart';
-import 'package:literahub/screens/home/home_screen.dart';
 import 'package:literahub/screens/login/login_screen.dart';
-import 'package:literahub/widgets/myweb.dart';
+import 'package:saathi/zllsaathi.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../apis/ServiceHandler.dart';
+import '../../apis/request/fradomdeeplink.dart';
+import '../../apis/response/fradom_response.dart';
+import '../../core/constant/LocalConstant.dart';
 import '../../core/theme/light_colors.dart';
 import '../../core/utility.dart';
-import '../../model/user.dart';
+import '../../iface/onResponse.dart';
+import '../../widgets/dropdown.dart';
 
 class HomePage extends StatefulWidget {
   final UserResponse userInfo;
@@ -31,7 +37,7 @@ class HomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<HomePage>
     with TickerProviderStateMixin, WidgetsBindingObserver
-    implements onClickListener {
+    implements onClickListener, onResponse {
   final int MYSCHOOLiNDEX = 0;
   final int TEACHER_OPERATION_iNDEX = 1;
   final int SCHOOL_OPERATION_iNDEX = 2;
@@ -55,25 +61,62 @@ class _MyHomePageState extends State<HomePage>
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<HomeMenuItem> menuItems = [];
+  UserResponse? userinfo;
+  BranchList? _selectedBranch = null;
+  String userPassword = '';
+  String userName = '';
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    getUserInfo();
+  }
+
+  getUserInfo() async {
+    var box = await Utility.openBox();
+    String json = box.get(LocalConstant.KEY_LOGIN_RESPONSE);
+    userName = box.get(LocalConstant.KEY_LOGIN_USERNAME);
+    userPassword = box.get(LocalConstant.KEY_LOGIN_PASSWORD);
+    userinfo = UserResponse.fromJson(jsonDecode(json));
+    print(userinfo!.toJson());
     generateMenu();
   }
 
   generateMenu() {
-    if (widget.userInfo.root!.subroot!.userRole == 'S-1-12') {
+    //print('User Role ${widget.userInfo.root!.subroot!.userRole}');
+    if (userName == 'MGMT1001') {
+      getGPMenu();
+    }else if (widget.userInfo.root!.subroot!.userRole == 'S-1-12') {
       getStudent1to12Menu();
     } else if (widget.userInfo.root!.subroot!.userRole == 'S-Pre-primary') {
       getStudentPrePrimaryMenu();
     } else if (widget.userInfo.root!.subroot!.userRole == 'TEACH-1-12') {
       getTeacher1to12Menu();
-    } else if (widget.userInfo.root!.subroot!.userRole == 'TEACH-Pre-primary') {
+    } else if (widget.userInfo.root!.subroot!.userRole == 'TEACH-Pre-primary' ||
+        widget.userInfo.root!.subroot!.userRole == 'staff') {
       getTeacherPrePrimaryMenu();
-    }else if (Utility.getUserRole(widget.userInfo.root!.subroot!.userRole!).isNotEmpty) {
+    } else if (Utility.getUserRole(widget.userInfo.root!.subroot!.userRole!)
+        .isNotEmpty) {
       getSystemAdminMenu();
+    } else {
+      print('in else ');
+      getSystemAdminMenu();
+    }
+    setState(() {
+      
+    });
+  }
+
+  Future<void> applaunchUrl(url) async {
+    print('url status ${url}');
+    bool isFound = await launchUrl(url);
+    print('is Found $isFound');
+    if (!isFound) {
+      //https://apps.apple.com/in/app/kidzeeapp/id1338356944
+      await launchUrl(Uri.parse(url));
+      print('app store');
+    } else {
+      print('App Found');
     }
   }
 
@@ -91,6 +134,7 @@ class _MyHomePageState extends State<HomePage>
         appBar: /*_selectedDestination == MENU_LEARNING_GOAL ? null :*/
             getAppbar(),
         bottomNavigationBar: footer(),
+        resizeToAvoidBottomInset: true,
         body: getScreen(),
       ),
     );
@@ -98,58 +142,94 @@ class _MyHomePageState extends State<HomePage>
 
   getStudent1to12Menu() {
     menuItems.clear();
-    menuItems.add(HomeMenuItem(MYSCHOOLiNDEX, MYSCHOOL, MYSCHOOL, 'myclass'));
-    menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
-        EXTENDED_CLASSROOM, 'exclassroom'));
-    menuItems.add(HomeMenuItem(
-        MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
-    //menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+    if (LocalConstant.flavor == 'MLL') {
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
+          EXTENDED_CLASSROOM, 'exclassroom'));
+    } else {
+      menuItems.add(HomeMenuItem(MYSCHOOLiNDEX, MYSCHOOL, MYSCHOOL, 'myclass'));
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
+          EXTENDED_CLASSROOM, 'exclassroom'));
+      menuItems.add(HomeMenuItem(
+          MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      //menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+    }
+  }
+
+  getGPMenu() {
+    menuItems.clear();
+    menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
   }
 
   getTeacher1to12Menu() {
     menuItems.clear();
-    menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
-        TEACHER_OPERATION, 'teachingoperation'));
-    menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
-        EXTENDED_CLASSROOM, 'exclassroom'));
-    menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
-        STUDENT_ANALYTICS, 'studentanalytis'));
-    menuItems.add(HomeMenuItem(
-        MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+    if (LocalConstant.flavor == 'MLL') {
+      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
+          STUDENT_ANALYTICS, 'studentanalytis'));
+    } else {
+      // menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
+      //     TEACHER_OPERATION, 'teachingoperation'));
+      // menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
+      //     EXTENDED_CLASSROOM, 'exclassroom'));
+      // menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
+      //     STUDENT_ANALYTICS, 'studentanalytis'));
+      menuItems.add(HomeMenuItem(
+          MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+    }
   }
 
   getStudentPrePrimaryMenu() {
     menuItems.clear();
-    menuItems.add(HomeMenuItem(MYSCHOOLiNDEX, MYSCHOOL, MYSCHOOL, 'myclass'));
-    menuItems
-        .add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-    menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
-        EXTENDED_CLASSROOM, 'exclassroom'));
+    if (LocalConstant.flavor == 'MLL') {
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
+          EXTENDED_CLASSROOM, 'exclassroom'));
+    } else {
+      menuItems.add(HomeMenuItem(MYSCHOOLiNDEX, MYSCHOOL, MYSCHOOL, 'myclass'));
+      menuItems.add(
+          HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+    }
   }
 
   getTeacherPrePrimaryMenu() {
     menuItems.clear();
-    menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
-        TEACHER_OPERATION, 'teachingoperation'));
-    menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
-        EXTENDED_CLASSROOM, 'exclassroom'));
-    menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
-        STUDENT_ANALYTICS, 'studentanalytis'));
-    menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-    menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+    if (LocalConstant.flavor == 'MLL') {
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
+          EXTENDED_CLASSROOM, 'exclassroom'));
+      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
+          STUDENT_ANALYTICS, 'studentanalytis'));
+    } else {
+      // menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
+      //     TEACHER_OPERATION, 'teachingoperation'));
+      // menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
+      //     EXTENDED_CLASSROOM, 'exclassroom'));
+      // menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
+      //     STUDENT_ANALYTICS, 'studentanalytis'));
+      // menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(
+          MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+    }
   }
 
   getSystemAdminMenu() {
     menuItems.clear();
-    menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
-        TEACHER_OPERATION, 'teachingoperation'));
-    menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
-        EXTENDED_CLASSROOM, 'exclassroom'));
-    menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
-        STUDENT_ANALYTICS, 'studentanalytis'));
-    menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-    menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
-    menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+    if (LocalConstant.flavor == 'MLL') {
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
+          EXTENDED_CLASSROOM, 'exclassroom'));
+      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
+          STUDENT_ANALYTICS, 'studentanalytis'));
+    } else {
+      // menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
+      //     TEACHER_OPERATION, 'teachingoperation'));
+      // menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
+      //     EXTENDED_CLASSROOM, 'exclassroom'));
+      // menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
+      //     STUDENT_ANALYTICS, 'studentanalytis'));
+      // menuItems.add(
+      //     HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(
+          MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      menuItems.add(
+          HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+    }
   }
 
   getScreen() {
@@ -204,6 +284,7 @@ class _MyHomePageState extends State<HomePage>
 
   AppBar getAppbar() {
     return AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: kPrimaryColor,
         title: widget.userInfo.root!.subroot!.userName == 'P'
             ? Text(
@@ -242,19 +323,110 @@ class _MyHomePageState extends State<HomePage>
         actions: [
           InkWell(
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginScreen(),
-                  ));
+              showClassSelection();
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Icon(Icons.logout),
+              child: Row(
+                children: [
+                  Text(
+                    branchController.text.toString().isNotEmpty
+                        ? branchController.text.toString()
+                        : 'Class ',
+                    style: LightColors.subtitleStyle10White,
+                  ),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.white,
+                  )
+                ],
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              signOut();
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(
+                Icons.logout,
+                color: Colors.white,
+              ),
             ),
           )
         ]);
   }
+
+  TextEditingController batchController = TextEditingController();
+  TextEditingController branchController = TextEditingController();
+  showClassSelection() {
+    print(userinfo!.root!.subroot!.branchList!.length);
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            margin: EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text('Select School'),
+                ZeeDropDown(
+                  textStyle: LightColors.textHeaderStyle,
+                  title: 'Select School',
+                  textController: batchController,
+                  hintText: 'Select School',
+                  items: userinfo!.root!.subroot!.branchList!,
+                  displayFunction: (p0) => '${p0.branchName ?? ''}}',
+                  onChanged: (p0) {
+                    if (p0 != null) {
+                      _selectedBranch = p0!;
+                      print(_selectedBranch!.batchList);
+                      batchController.text = p0!.branchName!;
+                      setState(() {});
+                    } else {
+                      //selectedFilterFranchisee = p0;
+                    }
+                  },
+                ),
+                if (_selectedBranch != null &&
+                    _selectedBranch!.batchList != null)
+                  ZeeDropDown(
+                    title: 'Select Branch',
+                    textController: branchController,
+                    hintText: 'Select Branch',
+                    items: _selectedBranch!.batchList!,
+                    displayFunction: (p0) => '${p0!.batchName ?? ''}}',
+                    onChanged: (p0) {
+                      if (p0 != null) {
+                        branchController.text = p0!.batchName!;
+                      } else {
+                        //selectedFilterFranchisee = p0;
+                      }
+                    },
+                  ),
+                SizedBox(
+                  height: 100,
+                )
+              ],
+            ),
+          );
+        });
+  }
+
+  signOut() async {
+    var box = await Utility.openBox();
+    await box.clear();
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+        ));
+  }
+
+  getBranch() {}
 
   void onBackClickListener() async {
     // print('Back click listen $_selectedDestination ${_currentPentemind}');
@@ -270,37 +442,202 @@ class _MyHomePageState extends State<HomePage>
     // }
   }
 
+  openmlzs(String packageName, String schema) async {
+    Subroot userinfo = widget.userInfo.root!.subroot!;
+    //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
+    String grade =
+        userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
+
+    MLLModel model = MLLModel(
+        userinfo.userId!,
+        userinfo.userName!,
+        userName,
+        '',
+        '',
+        '',
+        '',
+        userinfo.branchList![0].branchName!,
+        grade,
+        userPassword);
+    print(model.toJson());
+    bool isInstalled = await DeviceApps.isAppInstalled(packageName);
+    if (isInstalled) {
+      String encoded = base64
+          .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
+      String decoded = utf8.decode(base64.decode(encoded));
+      print('encode ${encoded}');
+      print('decoded ${decoded}');
+      applaunchUrl(Uri.parse("https://${schema}://?data=${encoded}"));
+    } else {
+      print('app not found');
+      launch("market://details?id=${packageName}?" + model.toJson());
+    }
+  }
+
+  openMllApp(String packageName) async {
+    Subroot userinfo = widget.userInfo.root!.subroot!;
+    //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
+    String grade =
+        userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
+
+    MLLModel model = MLLModel(
+        userinfo.userId!,
+        userinfo.userName!,
+        userName,
+        '',
+        '',
+        '',
+        '',
+        userinfo.branchList![0].branchName!,
+        grade,
+        userPassword);
+    print(model.toJson());
+    bool isInstalled = await DeviceApps.isAppInstalled(packageName);
+    if (isInstalled) {
+      String encoded = base64
+          .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
+      String decoded = utf8.decode(base64.decode(encoded));
+      print('encode ${encoded}');
+      print('decoded ${decoded}');
+      applaunchUrl(
+          Uri.parse("epfapp://open?username=SMUL2187&password=SMUL2187"));
+    } else {
+      print('app not found');
+      launch("market://details?id=${packageName}?" + model.toJson());
+    }
+  }
+
   @override
   void onClick(int action, value) {
     if (action == ZLL_SAATHI_iNDEX) {
-      //lunchExternalApp('com.zeelearn.zllsaathi');
-      String userRole = Utility.getUserRole(widget.userInfo.root!.subroot!.userRole!);
-      if(userRole.isEmpty){
-        print('URL https://intranet-9fda2.web.app/dashboard?bu_id=${widget.userInfo!.root!.subroot!.uid}&b_id=2&r=${widget.userInfo.root!.subroot!.userRole!}&u_id=0');
-        Utility.showAlert(context, 'Zll Saathi currently not acciciable for your Role(${widget.userInfo.root!.subroot!.userRole})...');
-      }else{
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => MyWebViewScreen(url: 'https://intranet-9fda2.web.app/dashboard?bu_id=${widget.userInfo!.root!.subroot!.uid}&b_id=2&r=${userRole}&u_id=0', title: 'ZllSaathi',)));
-      }
+      Subroot userinfo = widget.userInfo.root!.subroot!;
+      if(userName=='MGMT1001'){
+        ZllSaathi(context,'14000120', null);
+      }else
+        ZllSaathiNative(context, userName, '2',getUserRole(userinfo.userType!) , '0', kPrimaryLightColor, null);
     } else if (action == MLZS_READING_iNDEX) {
-      lunchExternalApp('com.application.freadom');
+      debugPrint('in Reading indedx');
+      Subroot userinfo = widget.userInfo.root!.subroot!;
+      print(userinfo.toJson());
+      if(userinfo.branchList![0].batchList==null || userinfo.branchList![0].batchList!.length==0){
+          Utility.showAlert(context, 'Batch not configured, Please connect with your center ');
+      }else{
+        debugPrint('user info');
+        //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
+        try{
+        String grade = userinfo.userType == 'Teacher'
+            ? userinfo.branchList![0].batchList![0]!.batchName!
+                .split('/')[0]
+                .trim()
+            : userinfo.branchList![0].batchList![0]!.batchName!
+                .split('/')[1]
+                .trim();
+        String className = userinfo.branchList![0].batchList![0]!.batchName!
+            .split('/')[1]
+            .trim();
+        // print('Grade is ${grade}  ${className}');
+        grade = grade.replaceAll('CLASS', '');
+        String mGrade = userinfo.branchList![0].batchList![0]!.batchName!
+            .split('/')[0]
+            .trim();
+        mGrade = mGrade.replaceAll('CLASS', '');
+        GetFradomDeepLink request = GetFradomDeepLink(
+            name: userinfo.userName!,
+            grade: /*userinfo.userType=='Teacher' ? */
+                'Grade ${mGrade.trim()}' /* : 'Grade ${grade.trim()}'*/,
+            schoolCode: getSchoolCode(userinfo.branchList![0].branchName!),
+            deviceType: 'Android',
+            description: 'MH',
+            schoolClass: userinfo.userType == 'Teacher' ? className : grade,
+            countryCode: '+91',
+            email: 'test@zeelearn.com',
+            age: '',
+            siblings: [],
+            isTeacher: userinfo.userType == 'Teacher' ? true : false,
+            contactNo: lettersToIndex(userinfo.userId!).toString(),
+            userType: userinfo.userType!,
+            schoolClassList: [
+              SchoolClass(
+                  schoolClass:
+                      userinfo.userType == 'Teacher' ? className : grade),
+              //SchoolClass(schoolClass: 'B'),
+            ]);
+        /*FredomModel model =  FredomModel('+91', userinfo.userName!, userinfo.userId!, 'Android', userinfo.userType!='TEACH' ? true : false, userinfo.branchList![0].branchName!, school_class);
+        print('original Data ${model.toJson()}');
+        print('encoded Data ${utf8.encode(model.toJson())}');
+        applaunchUrl(Uri.parse("freadomapp://?data=${utf8.encode(model.toJson())}"));*/
+
+        debugPrint('code  ');
+        debugPrint(request.toJson());
+        ApiServiceHandler().getFradomLink(request, this);
+        }catch(e){
+          debugPrint(e.toString());
+        }
+      }
     } else if (action == MYSCHOOLiNDEX) {
       lunchExternalApp('com.innova.students_mlz_epfuture');
     } else if (action == TEACHER_OPERATION_iNDEX) {
-      lunchExternalApp('epfuture.innova.com.teacher_mlz');
+      openMllApp('com.innova.students_mlz_epfuture');
+      //lunchExternalApp('epfuture.innova.com.teacher_mlz');
     } else if (action == EXTENDED_CLASSROOM_iNDEX) {
-      lunchExternalApp('com.innova.studentsmlz');
+      openmlzs("com.zeelearn.mlzstapp", "mlzstapp");
+      //lunchExternalApp('com.innova.studentsmlz');
     } else if (action == PENTEMIND_iNDEX) {
       lunchExternalApp('com.zeelearn.ekidzee');
     } else if (action == SCHOOL_OPERATION_iNDEX) {
-      lunchExternalApp('com.innova.mis_ep_future');
+      openMllApp('com.innova.mis_ep_future');
     } else if (action == STUDENT_ANALYTICS_iNDEX) {
-      lunchExternalApp('epfuture.innova.com.teacher_mlz');
+      openmlzs("com.zeelearn.mlzsapp", "mlzsapp");
+      //lunchExternalApp('epfuture.innova.com.teacher_mlz');
     } else {
       lunchExternalApp('com.zeelearn.saarthi');
     }
+  }
+
+  String getSchoolCode(String school) {
+    String code = "mxxbjk";
+    if (school.toLowerCase().contains('goa')) {
+      code = 'mxxbjk';
+    } else if (school.toLowerCase().contains('nagpur')) {
+      code = 'skttcj';
+    } else if (school.toLowerCase().contains('patiala')) {
+      code = 'gwqfhm';
+    } else if (school.toLowerCase().contains('karnal')) {
+      code = 'unbhzy';
+    } else if (school.toLowerCase().contains('bathinda')) {
+      code = 'mawjwn';
+    }
+    return code;
+  }
+
+  int lettersToIndex(String letters) {
+    var result = 0;
+    for (var i = 0; i < letters.length; i++) {
+      result = result * 10 + (letters.codeUnitAt(i) & 0x1f);
+    }
+    return result;
+  }
+
+  String getUserRole(String type){
+    String userRole = type;
+    switch(type){
+        case 'School Admin':
+          userRole = 'School Admin';
+        break;
+        case 'School IT Admin':
+          userRole = 'School Admin';
+        break;
+        case 'Staff':
+          userRole = 'Teacher';
+        break;
+        case 'Head Teacher':
+          userRole = 'Principal';
+        break;
+        case 'Principal':
+          userRole = 'Principal';
+        break;
+    };
+    return userRole;
   }
 
   lunchExternalApp(String package) async {
@@ -309,7 +646,6 @@ class _MyHomePageState extends State<HomePage>
       print(package);
       bool isInstalled = await DeviceApps.isAppInstalled(package);
       if (isInstalled) {
-        DeviceApps.openApp(package);
       } else {
         print('app not found');
 
@@ -318,6 +654,37 @@ class _MyHomePageState extends State<HomePage>
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  @override
+  void onError(int action, value) {
+    Navigator.of(context).pop();
+  }
+
+  @override
+  void onStart() {
+    Utility.showLoaderDialog(context);
+  }
+
+  openFradomApp(String url) async {
+    // Check if Spotify is installed
+    if (await canLaunchUrl(Uri.parse(url))) {
+      // Launch the url which will open Spotify
+      launchUrl(Uri.parse(url));
+    }
+  }
+
+  @override
+  void onSuccess(value) {
+    Navigator.of(context).pop();
+    if (value is FradomLinkResponse) {
+      FradomLinkResponse response = value;
+      if (response != null &&
+          response.result != null &&
+          response.result!.data != null) {
+        openFradomApp(response.result!.data!);
+      }
     }
   }
 }

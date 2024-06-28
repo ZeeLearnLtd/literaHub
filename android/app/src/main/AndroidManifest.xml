@@ -5,6 +5,8 @@
    <package android:name="com.innova.students_mlz_epfuture" />
    <package android:name="epfuture.innova.com.teacher_mlz" />
    <package android:name="epfuture.innova.com.teacher_mlz" />
+    <package android:name="com.zeelearn.mlzsapp" />
+    <package android:name="com.zeelearn.mlzstapp" />
  </queries>
 
  <queries>
@@ -21,6 +23,7 @@
             <data android:mimeType="*/*" />
         </intent>
     </queries>
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="literahub"
         android:name="${applicationName}"
@@ -46,6 +49,15 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="literahub"  />
+                <data android:scheme="https" />
+            </intent-filter>
+
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

@@ -233,6 +233,7 @@ class _LoginFormState extends State<LoginForm> implements onResponse{
   @override
   void onError(int action, value) {
     isLoading = false;
+    Utility.showAlert(context, value);
   }
   
   @override
@@ -253,6 +254,8 @@ class _LoginFormState extends State<LoginForm> implements onResponse{
           String json = jsonEncode(response);
           print(json);
           box.put(LocalConstant.KEY_LOGIN_RESPONSE, json);
+          box.put(LocalConstant.KEY_LOGIN_PASSWORD, userPasswordController.text.toString());
+          box.put(LocalConstant.KEY_LOGIN_USERNAME, userNameController.text.toString());
           Navigator.push(
           context,
           MaterialPageRoute(
@@ -263,6 +266,8 @@ class _LoginFormState extends State<LoginForm> implements onResponse{
       }else{
         Utility.showAlert(context, 'Invalid User Name and Password, please try again later');
       }
+    }else{
+      Utility.showAlert(context, 'Invalid User Name and Password, please try again later');
     }
   }
 }
