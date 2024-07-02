@@ -51,7 +51,7 @@ dependencies:
   hive_flutter: ^1.1.0
   external_app_launcher: ^4.0.0
   saathi:
-    path: ../ZeeSathi/
+    path: D:/Sudhir/flutterWorkspace/reseaarch/ZeeSathi/
 
 dependency_overrides:
   device_info_plus: ^10.0.0
