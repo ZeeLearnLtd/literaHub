@@ -7,13 +7,11 @@ list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_windows
   firebase_core
   irondash_engine_context
-  pdfx
   super_native_extensions
   url_launcher_windows
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
-  pdfrx
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

@@ -45,7 +45,7 @@ android {
 
     signingConfigs{
         release {
-            storeFile file('..\\zeelearn_android.jks')
+            storeFile file('..\\zeelearnandroid.jks')
             storePassword 'zils@1234'
             keyAlias = 'literiahub'
             keyPassword 'zils@1234'
