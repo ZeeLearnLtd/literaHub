@@ -114,7 +114,7 @@ class _MyHomePageState extends State<HomePage>
               getStudent1to12Menu();
             }else{
               //pre-primary
-              getTeacherPrePrimaryMenu();
+              getStudentPrePrimaryMenu();
             }
       }else{
         //Dashboard menu not for your role
@@ -196,17 +196,12 @@ class _MyHomePageState extends State<HomePage>
   getTeacher1to12Menu() {
     menuItems.clear();
     if (LocalConstant.flavor == 'MLL') {
-      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
-          STUDENT_ANALYTICS, 'studentanalytis'));
+      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
     } else {
-      // menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
-      //     TEACHER_OPERATION, 'teachingoperation'));
-      // menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
-      //     EXTENDED_CLASSROOM, 'exclassroom'));
-      // menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
-      //     STUDENT_ANALYTICS, 'studentanalytis'));
-      menuItems.add(HomeMenuItem(
-          MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,TEACHER_OPERATION, 'teachingoperation'));
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));
+      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
+      menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     }
   }
 
@@ -217,8 +212,8 @@ class _MyHomePageState extends State<HomePage>
           EXTENDED_CLASSROOM, 'exclassroom'));
     } else {
       menuItems.add(HomeMenuItem(MYSCHOOLiNDEX, MYSCHOOL, MYSCHOOL, 'myclass'));
-      menuItems.add(
-          HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     }
   }
 
@@ -230,13 +225,10 @@ class _MyHomePageState extends State<HomePage>
       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
           STUDENT_ANALYTICS, 'studentanalytis'));
     } else {
-      // menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
-      //     TEACHER_OPERATION, 'teachingoperation'));
-      // menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
-      //     EXTENDED_CLASSROOM, 'exclassroom'));
-      // menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
-      //     STUDENT_ANALYTICS, 'studentanalytis'));
-      // menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,TEACHER_OPERATION, 'teachingoperation'));
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));
+      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
       menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     }
   }
@@ -553,12 +545,11 @@ class _MyHomePageState extends State<HomePage>
     bool isInstalled = await DeviceApps.isAppInstalled(packageName);
     if (isInstalled) {
       String encoded = base64
-          .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
+          .encode(utf8.encode(model.toJson()) ); // dXNlcm5hbWU6cGFzc3dvcmQ=
       String decoded = utf8.decode(base64.decode(encoded));
-      print('encode ${encoded}');
-      print('decoded ${decoded}');
-      applaunchUrl(
-          Uri.parse("epfapp://open?username=SMUL2187&password=SMUL2187"));
+      //print('encode ${encoded}');
+      //print('decoded ${decoded}');
+      applaunchUrl(Uri.parse("epfapp://open?username=$userName,password=$userPassword"));
     } else {
       print('app not found');
       launch("market://details?id=${packageName}?" + model.toJson());
@@ -706,9 +697,8 @@ class _MyHomePageState extends State<HomePage>
       if (isInstalled) {
       } else {
         print('app not found');
-
         ///if the app is not installed it lunches google play store so you can install it from there
-        launch("market://details?id=" + package);
+        launchUrl(Uri.parse("market://details?id=" + package),mode: LaunchMode.externalApplication);
       }
     } catch (e) {
       print(e);
