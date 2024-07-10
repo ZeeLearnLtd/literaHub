@@ -10,7 +10,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   firebase_core
   firebase_storage
   irondash_engine_context
-  pdfx
   super_native_extensions
   url_launcher_windows
 )

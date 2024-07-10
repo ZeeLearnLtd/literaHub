@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:device_apps/device_apps.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -81,13 +83,15 @@ class _MyHomePageState extends State<HomePage>
     if(userinfo!=null && userinfo!.root!=null && userinfo!.root!.subroot!=null && userinfo!.root!.subroot!.branchList!=null){
       _selectedBranch = userinfo!.root!.subroot!.branchList![0];
     }
-    print(userinfo!.toJson());
+    //print(userinfo!.toJson());
     generateMenu();
   }
 
   generateMenu() {
     print('User Role ${widget.userInfo.root!.subroot!.userRole}');
-    if (userName == 'MGMT1001') {
+    if(Platform.isIOS){
+      menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+    }else if (userName == 'MGMT1001') {
       getGPMenu();
     }else if (widget.userInfo.root!.subroot!.userRole!.toLowerCase() == 'principal') {
       getPrincipalMenu();
@@ -235,12 +239,16 @@ class _MyHomePageState extends State<HomePage>
 
   getPrincipalMenu(){
     menuItems.clear();
-    menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,TEACHER_OPERATION, 'teachingoperation'));
-    menuItems.add(HomeMenuItem(SCHOOL_OPERATION_iNDEX, SCHOOL_OPERATION,SCHOOL_OPERATION, 'schooloperation'));
-    menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));  
-    menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
-    menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-    menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+    if(!kIsWeb && Platform.isIOS){
+      menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+    }else{
+      menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,TEACHER_OPERATION, 'teachingoperation'));
+      menuItems.add(HomeMenuItem(SCHOOL_OPERATION_iNDEX, SCHOOL_OPERATION,SCHOOL_OPERATION, 'schooloperation'));
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));  
+      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+    }
     setState(() {
       
     });
@@ -560,10 +568,12 @@ class _MyHomePageState extends State<HomePage>
   void onClick(int action, value) {
     if (action == ZLL_SAATHI_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
-      if(userName=='MGMT1001'){
-        ZllSaathi(context,'14000120', null);
-      }else
+      // if(userName=='MGMT1001'){
+      //   ZllSaathi(context,'14000120', null);
+      // }else{
+        print('buuid ${userinfo.userId!}  -- ${getUserRole(userinfo.userType!)}');
         ZllSaathiNative(context, userName, '2',getUserRole(userinfo.userType!) , '0', kPrimaryLightColor, null);
+      //}
     } else if (action == MLZS_READING_iNDEX) {
       debugPrint('in Reading indedx');
       Subroot userinfo = widget.userInfo.root!.subroot!;
