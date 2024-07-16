@@ -150,7 +150,7 @@ class _MyHomePageState extends State<HomePage>
     print('is Found $isFound');
     if (!isFound) {
       //https://apps.apple.com/in/app/kidzeeapp/id1338356944
-      await launchUrl(Uri.parse(url));
+      await launchUrl(Uri.parse(url),mode: LaunchMode.externalApplication,);
       print('app store');
     } else {
       print('App Found');
@@ -532,6 +532,26 @@ class _MyHomePageState extends State<HomePage>
     }
   }
 
+  openPentemind() async{
+    print('in pentrmind ...');
+    bool isInstalled = await DeviceApps.isAppInstalled('com.zeelearn.ekidzee');
+    if (isInstalled ) {
+      try{
+        applaunchUrl(Uri.parse("https://kidzeeapp1?username=$userName,password=$userPassword"));
+      }catch(e){
+        print('error in 542 ${e.toString()}');
+      }
+    } else {
+      final url = Uri.parse(
+          Platform.isAndroid
+              ? "https://play.google.com/store/apps/details?id=com.zeelearn.ekidzee&hl=en_IN"
+              : "https://apps.apple.com/app/id1338356944",
+        );
+        ///if the app is not installed it lunches google play store so you can install it from there
+        launchUrl(url,mode: LaunchMode.externalApplication);
+    }
+  }
+
   openMllApp(String packageName) async {
     Subroot userinfo = widget.userInfo.root!.subroot!;
     //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
@@ -634,19 +654,20 @@ class _MyHomePageState extends State<HomePage>
         }
       }
     } else if (action == MYSCHOOLiNDEX) {
-      lunchExternalApp('com.innova.students_mlz_epfuture');
-    } else if (action == TEACHER_OPERATION_iNDEX) {
+      //lunchExternalApp('com.innova.students_mlz_epfuture');
       openMllApp('com.innova.students_mlz_epfuture');
-      //lunchExternalApp('epfuture.innova.com.teacher_mlz');
+    } else if (action == TEACHER_OPERATION_iNDEX) {
+      //openMllApp('com.innova.students_mlz_epfuture');
+      lunchExternalApp('eplusreg.innova.com.teacher_epfuture');
     } else if (action == EXTENDED_CLASSROOM_iNDEX) {
-      openmlzs("com.zeelearn.mlzstapp", "mlzstapp");
-      //lunchExternalApp('com.innova.studentsmlz');
+      openmlzs("com.zeelearn.mlzsapp", "mlzsapp");
     } else if (action == PENTEMIND_iNDEX) {
-      lunchExternalApp('com.zeelearn.ekidzee');
+      openPentemind();
+      //lunchExternalApp('com.zeelearn.ekidzee');
     } else if (action == SCHOOL_OPERATION_iNDEX) {
       openMllApp('com.innova.mis_ep_future');
     } else if (action == STUDENT_ANALYTICS_iNDEX) {
-      openmlzs("com.zeelearn.mlzsapp", "mlzsapp");
+      openmlzs("com.zeelearn.mlzstapp", "mlzstapp");
       //lunchExternalApp('epfuture.innova.com.teacher_mlz');
     } else {
       lunchExternalApp('com.zeelearn.saarthi');
@@ -705,10 +726,16 @@ class _MyHomePageState extends State<HomePage>
       print(package);
       bool isInstalled = await DeviceApps.isAppInstalled(package);
       if (isInstalled) {
+        print('app found ${package}');
       } else {
-        print('app not found');
+        print('app not found ${package}');
+        final url = Uri.parse(
+          Platform.isAndroid
+              ? "https://play.google.com/store/apps/details?id=${package}&hl=en_IN"
+              : "https://apps.apple.com/app/id$package",
+        );
         ///if the app is not installed it lunches google play store so you can install it from there
-        launchUrl(Uri.parse("market://details?id=" + package),mode: LaunchMode.externalApplication);
+        launchUrl(url,mode: LaunchMode.externalApplication);
       }
     } catch (e) {
       print(e);
