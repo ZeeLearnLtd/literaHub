@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:device_apps/device_apps.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -89,8 +90,13 @@ class _MyHomePageState extends State<HomePage>
 
   generateMenu() {
     print('User Role ${widget.userInfo.root!.subroot!.userRole}');
-    if(Platform.isIOS){
+    if (Platform.isIOS) {
+      menuItems.clear();
       menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      //menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));  
+      //menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
+    
     }else if (userName == 'MGMT1001') {
       getGPMenu();
     }else if (widget.userInfo.root!.subroot!.userRole!.toLowerCase() == 'principal') {
@@ -179,7 +185,9 @@ class _MyHomePageState extends State<HomePage>
 
   getStudent1to12Menu() {
     menuItems.clear();
-    if (LocalConstant.flavor == 'MLL') {
+    if(Platform.isIOS){
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));
+    }else if (LocalConstant.flavor == 'MLL') {
       menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
           EXTENDED_CLASSROOM, 'exclassroom'));
     } else {
@@ -199,7 +207,12 @@ class _MyHomePageState extends State<HomePage>
 
   getTeacher1to12Menu() {
     menuItems.clear();
-    if (LocalConstant.flavor == 'MLL') {
+    if(Platform.isIOS){
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));
+      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
+    }else if (LocalConstant.flavor == 'MLL') {
       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
     } else {
       menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,TEACHER_OPERATION, 'teachingoperation'));
@@ -211,6 +224,9 @@ class _MyHomePageState extends State<HomePage>
 
   getStudentPrePrimaryMenu() {
     menuItems.clear();
+    if(Platform.isIOS){
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+    }
     if (LocalConstant.flavor == 'MLL') {
       menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
           EXTENDED_CLASSROOM, 'exclassroom'));
@@ -223,7 +239,11 @@ class _MyHomePageState extends State<HomePage>
 
   getTeacherPrePrimaryMenu() {
     menuItems.clear();
-    if (LocalConstant.flavor == 'MLL') {
+    if(Platform.isIOS){
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));
+      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
+    }else if (LocalConstant.flavor == 'MLL') {
       menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
           EXTENDED_CLASSROOM, 'exclassroom'));
       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
@@ -241,6 +261,9 @@ class _MyHomePageState extends State<HomePage>
     menuItems.clear();
     if(!kIsWeb && Platform.isIOS){
       menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));  
+      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
     }else{
       menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,TEACHER_OPERATION, 'teachingoperation'));
       menuItems.add(HomeMenuItem(SCHOOL_OPERATION_iNDEX, SCHOOL_OPERATION,SCHOOL_OPERATION, 'schooloperation'));
@@ -256,12 +279,19 @@ class _MyHomePageState extends State<HomePage>
 
   getBusinessPartnerMenu(){
     menuItems.clear();
-    menuItems.add(HomeMenuItem(SCHOOL_OPERATION_iNDEX, SCHOOL_OPERATION,SCHOOL_OPERATION, 'schooloperation'));
-    menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));  
-    menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
-    menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
-    menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-    menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+    if(Platform.isIOS){
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));  
+      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
+    }else{
+      menuItems.add(HomeMenuItem(SCHOOL_OPERATION_iNDEX, SCHOOL_OPERATION,SCHOOL_OPERATION, 'schooloperation'));
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));  
+      menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
+      menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+    }
     setState(() {
       
     });
@@ -500,11 +530,10 @@ class _MyHomePageState extends State<HomePage>
     // }
   }
 
-  openmlzs(String packageName, String schema) async {
+  openmlzs(String packageName, String schema,String appleId) async {
     Subroot userinfo = widget.userInfo.root!.subroot!;
     //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
-    String grade =
-        userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
+    String grade = userinfo.branchList![0].batchList![0]!.batchName!.split('/')[1].trim();
 
     MLLModel model = MLLModel(
         userinfo.userId!,
@@ -518,37 +547,95 @@ class _MyHomePageState extends State<HomePage>
         grade,
         userPassword);
     print(model.toJson());
-    bool isInstalled = await DeviceApps.isAppInstalled(packageName);
-    if (isInstalled) {
-      String encoded = base64
-          .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
+    //bool isInstalled = await DeviceApps.isAppInstalled(packageName);
+     String encoded = base64.encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
       String decoded = utf8.decode(base64.decode(encoded));
-      print('encode ${encoded}');
-      print('decoded ${decoded}');
-      applaunchUrl(Uri.parse("https://${schema}://?data=${encoded}"));
+      bool isAvaliable  = await LaunchApp.isAppInstalled(
+        androidPackageName: packageName,
+        iosUrlScheme: 'https://${schema}://'
+      );
+      print('App Found Status ${isAvaliable}');
+    if(isAvaliable && Platform.isAndroid){
+        applaunchUrl(Uri.parse("https://${schema}://?data=${encoded}"));
+      // }else{
+      //   final url = Uri.parse(
+      //     Platform.isAndroid
+      //         ? "https://play.google.com/store/apps/details?id=com.zeelearn.ekidzee&hl=en_IN"
+      //         : "https://apps.apple.com/app/id$appleId",
+      //   );
+      //   ///if the app is not installed it lunches google play store so you can install it from there
+      //   launchUrl(url,mode: LaunchMode.externalApplication);
+    }else if (isAvaliable) {
+      if(isAvaliable){
+        await LaunchApp.openApp(
+                  androidPackageName: packageName,
+                  iosUrlScheme: 'https://${schema}://?data=${encoded}',//'https://kidzee.com/login/?username=F2354&password=Kidzee#123',
+                  appStoreLink: 'https://${schema}://?data=${encoded}',//'https://apps.apple.com/in/app/kidzeeapp/id$appleId',
+                  openStore: false
+                );
+      }else{
+        await LaunchApp.openApp(
+                  androidPackageName: '${packageName}',
+                  iosUrlScheme: 'https://${schema}://?data=${encoded}',
+                  appStoreLink: 'https://${schema}://?data=${encoded}',//'https://apps.apple.com/in/app/kidzeeapp/id$appleId',
+                   openStore: false
+                );
+      }
     } else {
       print('app not found');
-      launch("market://details?id=${packageName}?" + model.toJson());
+      //launch("market://details?id=${packageName}?" + model.toJson());
+       final url = Uri.parse(
+          Platform.isAndroid
+              ? "https://play.google.com/store/apps/details?id=${packageName}&hl=en_IN"
+              : "https://apps.apple.com/app/id$appleId",
+        );
+        ///if the app is not installed it lunches google play store so you can install it from there
+        launchUrl(url,mode: LaunchMode.externalApplication);
     }
   }
 
   openPentemind() async{
-    print('in pentrmind ...');
-    bool isInstalled = await DeviceApps.isAppInstalled('com.zeelearn.ekidzee');
-    if (isInstalled ) {
-      try{
-        applaunchUrl(Uri.parse("https://kidzeeapp1?username=$userName,password=$userPassword"));
-      }catch(e){
-        print('error in 542 ${e.toString()}');
+    if(Platform.isIOS){
+       bool isAvaliable  = await LaunchApp.isAppInstalled(
+        androidPackageName: 'com.zeelearn.ekidzee',
+        iosUrlScheme: 'kidzeeApp://'
+      );
+      print('isAvaliable ${isAvaliable}');
+      if(isAvaliable){
+        await LaunchApp.openApp(
+                  androidPackageName: 'com.zeelearn.ekidzee',
+                  iosUrlScheme: 'http://www.kidzee.com/?login=true&username=F2354&password=Kidzee#123',
+                  appStoreLink: 'https://apps.apple.com/in/app/kidzeeapp/id1338356944',
+                  openStore: true
+                );
+      }else{
+        await LaunchApp.openApp(
+                  androidPackageName: 'com.zeelearn.ekidzee',
+                  iosUrlScheme: 'http://kidzee.com',
+                  appStoreLink: 'https://apps.apple.com/in/app/kidzeeapp/id1338356944',
+                  openStore: true
+                );
       }
-    } else {
-      final url = Uri.parse(
-          Platform.isAndroid
-              ? "https://play.google.com/store/apps/details?id=com.zeelearn.ekidzee&hl=en_IN"
-              : "https://apps.apple.com/app/id1338356944",
-        );
-        ///if the app is not installed it lunches google play store so you can install it from there
-        launchUrl(url,mode: LaunchMode.externalApplication);
+    }else{
+      print('in pentrmind ...');
+        //applaunchUrl(Uri.parse("https://www.ekidzee.com/"));
+      bool isInstalled = await DeviceApps.isAppInstalled('com.zeelearn.ekidzee');
+      if (isInstalled ) {
+        try{
+          //applaunchUrl(Uri.parse("https://kidzeeapp1?username=$userName,password=$userPassword"));
+        }catch(e){
+          print('error in 542 ${e.toString()}');
+        }
+      } else {
+        print('Appllication not installed 583');
+        final url = Uri.parse(
+            Platform.isAndroid
+                ? "https://play.google.com/store/apps/details?id=com.zeelearn.ekidzee&hl=en_IN"
+                : "https://apps.apple.com/app/id1338356944",
+          );
+          ///if the app is not installed it lunches google play store so you can install it from there
+          launchUrl(url,mode: LaunchMode.externalApplication);
+      }
     }
   }
 
@@ -571,6 +658,7 @@ class _MyHomePageState extends State<HomePage>
         userPassword);
     print(model.toJson());
     bool isInstalled = await DeviceApps.isAppInstalled(packageName);
+    
     if (isInstalled) {
       String encoded = base64
           .encode(utf8.encode(model.toJson()) ); // dXNlcm5hbWU6cGFzc3dvcmQ=
@@ -660,14 +748,14 @@ class _MyHomePageState extends State<HomePage>
       //openMllApp('com.innova.students_mlz_epfuture');
       lunchExternalApp('eplusreg.innova.com.teacher_epfuture');
     } else if (action == EXTENDED_CLASSROOM_iNDEX) {
-      openmlzs("com.zeelearn.mlzsapp", "mlzsapp");
+      openmlzs("com.zeelearn.mlzsapp", "mlzsapp","6463385772");
     } else if (action == PENTEMIND_iNDEX) {
       openPentemind();
       //lunchExternalApp('com.zeelearn.ekidzee');
     } else if (action == SCHOOL_OPERATION_iNDEX) {
       openMllApp('com.innova.mis_ep_future');
     } else if (action == STUDENT_ANALYTICS_iNDEX) {
-      openmlzs("com.zeelearn.mlzstapp", "mlzstapp");
+      openmlzs("com.zeelearn.mlzstapp", "mlzstapp","6504000882");
       //lunchExternalApp('epfuture.innova.com.teacher_mlz');
     } else {
       lunchExternalApp('com.zeelearn.saarthi');
