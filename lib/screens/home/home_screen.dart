@@ -13,6 +13,7 @@ import 'package:literahub/globals.dart';
 import 'package:literahub/iface/onClick.dart';
 import 'package:literahub/model/MllModel.dart';
 import 'package:literahub/model/menuitem.dart';
+import 'package:literahub/screens/auth/views/login.dart';
 import 'package:literahub/screens/login/login_screen.dart';
 import 'package:saathi/zllsaathi.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,6 +26,7 @@ import '../../core/theme/light_colors.dart';
 import '../../core/utility.dart';
 import '../../iface/onResponse.dart';
 import '../../widgets/dropdown.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   final UserResponse userInfo;
@@ -90,15 +92,16 @@ class _MyHomePageState extends State<HomePage>
 
   generateMenu() {
     print('User Role ${widget.userInfo.root!.subroot!.userRole}');
-    if (Platform.isIOS) {
-      menuItems.clear();
+    menuItems.clear();
+    if(LocalConstant.flavor=='Fradom'){
+        menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+    }else if (Platform.isIOS) {
+      
       menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
       menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
       //menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));  
       //menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
     
-    }else if (userName == 'MGMT1001') {
-      getGPMenu();
     }else if (widget.userInfo.root!.subroot!.userRole!.toLowerCase() == 'principal') {
       getPrincipalMenu();
     }else if (widget.userInfo.root!.subroot!.userRole!.toLowerCase() == 'f' || widget.userInfo.root!.subroot!.userRole!.toLowerCase() == 'business partner') {
@@ -421,7 +424,7 @@ class _MyHomePageState extends State<HomePage>
                     branchController.text.toString().isNotEmpty
                         ? branchController.text.toString()
                         : 'Class ',
-                    style: LightColors.subtitleStyle10White,
+                    style: LightColors.headerBoldStyle,
                   ),
                   Icon(
                     Icons.arrow_drop_down,
@@ -505,12 +508,14 @@ class _MyHomePageState extends State<HomePage>
   }
 
   signOut() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.clear();
     var box = await Utility.openBox();
     await box.clear();
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => LoginScreen(),
+          builder: (context) => LiteriaHubLoginPage(),
         ));
   }
 
@@ -595,47 +600,36 @@ class _MyHomePageState extends State<HomePage>
   }
 
   openPentemind() async{
-    if(Platform.isIOS){
-       bool isAvaliable  = await LaunchApp.isAppInstalled(
-        androidPackageName: 'com.zeelearn.ekidzee',
+    bool isAvaliable  = await LaunchApp.isAppInstalled(
+        androidPackageName: 'com.zeelearn.mlzsv1',
         iosUrlScheme: 'kidzeeApp://'
       );
+    if(Platform.isIOS){
+       
       print('isAvaliable ${isAvaliable}');
       if(isAvaliable){
+        //launchUrl(Uri.parse('https://www.kidzee.com'));
         await LaunchApp.openApp(
-                  androidPackageName: 'com.zeelearn.ekidzee',
-                  iosUrlScheme: 'http://www.kidzee.com/?login=true&username=F2354&password=Kidzee#123',
+                  androidPackageName: 'com.zeelearn.mlzsv1',
+                  iosUrlScheme: 'https://zllsaathi.zeelearn.com/',//'kidzeeApp://?login=true&username=F2354&password=Kidzee#123',
                   appStoreLink: 'https://apps.apple.com/in/app/kidzeeapp/id1338356944',
                   openStore: true
                 );
       }else{
         await LaunchApp.openApp(
-                  androidPackageName: 'com.zeelearn.ekidzee',
-                  iosUrlScheme: 'http://kidzee.com',
+                  androidPackageName: 'com.zeelearn.mlzsv1',
+                  iosUrlScheme: 'kidzeeApp://',
                   appStoreLink: 'https://apps.apple.com/in/app/kidzeeapp/id1338356944',
                   openStore: true
                 );
       }
     }else{
-      print('in pentrmind ...');
-        //applaunchUrl(Uri.parse("https://www.ekidzee.com/"));
-      bool isInstalled = await DeviceApps.isAppInstalled('com.zeelearn.ekidzee');
-      if (isInstalled ) {
-        try{
-          //applaunchUrl(Uri.parse("https://kidzeeapp1?username=$userName,password=$userPassword"));
-        }catch(e){
-          print('error in 542 ${e.toString()}');
-        }
-      } else {
-        print('Appllication not installed 583');
-        final url = Uri.parse(
-            Platform.isAndroid
-                ? "https://play.google.com/store/apps/details?id=com.zeelearn.ekidzee&hl=en_IN"
-                : "https://apps.apple.com/app/id1338356944",
-          );
-          ///if the app is not installed it lunches google play store so you can install it from there
-          launchUrl(url,mode: LaunchMode.externalApplication);
-      }
+    await LaunchApp.openApp(
+              androidPackageName: "com.zeelearn.mlzsv1",
+              iosUrlScheme: 'http://kidzee.com',
+              appStoreLink: 'https://apps.apple.com/in/app/kidzeeapp/id1338356944',
+              openStore: false
+            );
     }
   }
 
@@ -662,13 +656,16 @@ class _MyHomePageState extends State<HomePage>
     if (isInstalled) {
       String encoded = base64
           .encode(utf8.encode(model.toJson()) ); // dXNlcm5hbWU6cGFzc3dvcmQ=
-      String decoded = utf8.decode(base64.decode(encoded));
-      //print('encode ${encoded}');
-      //print('decoded ${decoded}');
+      //String decoded = utf8.decode(base64.decode(encoded));
       applaunchUrl(Uri.parse("epfapp://open?username=$userName,password=$userPassword"));
     } else {
-      print('app not found');
-      launch("market://details?id=${packageName}?" + model.toJson());
+      await LaunchApp.openApp(
+                  androidPackageName: packageName,
+                  iosUrlScheme: '',
+                  appStoreLink: '',
+                  openStore: true
+                );
+      //launchUrl(Uri.parse("market://details?id=${packageName}?" + model.toJson()));
     }
   }
 
@@ -676,21 +673,14 @@ class _MyHomePageState extends State<HomePage>
   void onClick(int action, value) {
     if (action == ZLL_SAATHI_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
-      // if(userName=='MGMT1001'){
-      //   ZllSaathi(context,'14000120', null);
-      // }else{
-        print('buuid ${userinfo.userId!}  -- ${getUserRole(userinfo.userType!)}');
-        ZllSaathiNative(context, userName, '2',getUserRole(userinfo.userType!) , '0', kPrimaryLightColor, null);
-      //}
+      ZllSaathi(context, '14002035', null);
+      //ZllSaathiNative(context, userName, '2',getUserRole(userinfo.userType!) , '0', kPrimaryLightColor, null);
     } else if (action == MLZS_READING_iNDEX) {
-      debugPrint('in Reading indedx');
       Subroot userinfo = widget.userInfo.root!.subroot!;
       print(userinfo.toJson());
       if(userinfo.branchList![0].batchList==null || userinfo.branchList![0].batchList!.length==0){
           Utility.showAlert(context, 'Batch not configured, Please connect with your center ');
       }else{
-        debugPrint('user info');
-        //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
         try{
         String grade = userinfo.userType == 'Teacher'
             ? userinfo.branchList![0].batchList![0]!.batchName!
@@ -727,43 +717,31 @@ class _MyHomePageState extends State<HomePage>
               SchoolClass(
                   schoolClass:
                       userinfo.userType == 'Teacher' ? className : grade),
-              //SchoolClass(schoolClass: 'B'),
             ]);
-        /*FredomModel model =  FredomModel('+91', userinfo.userName!, userinfo.userId!, 'Android', userinfo.userType!='TEACH' ? true : false, userinfo.branchList![0].branchName!, school_class);
-        print('original Data ${model.toJson()}');
-        print('encoded Data ${utf8.encode(model.toJson())}');
-        applaunchUrl(Uri.parse("freadomapp://?data=${utf8.encode(model.toJson())}"));*/
-
-        debugPrint('code  ');
-        debugPrint(request.toJson());
         ApiServiceHandler().getFradomLink(request, this);
         }catch(e){
           debugPrint(e.toString());
         }
       }
     } else if (action == MYSCHOOLiNDEX) {
-      //lunchExternalApp('com.innova.students_mlz_epfuture');
       openMllApp('com.innova.students_mlz_epfuture');
     } else if (action == TEACHER_OPERATION_iNDEX) {
-      //openMllApp('com.innova.students_mlz_epfuture');
       lunchExternalApp('eplusreg.innova.com.teacher_epfuture');
     } else if (action == EXTENDED_CLASSROOM_iNDEX) {
       openmlzs("com.zeelearn.mlzsapp", "mlzsapp","6463385772");
     } else if (action == PENTEMIND_iNDEX) {
       openPentemind();
-      //lunchExternalApp('com.zeelearn.ekidzee');
     } else if (action == SCHOOL_OPERATION_iNDEX) {
       openMllApp('com.innova.mis_ep_future');
     } else if (action == STUDENT_ANALYTICS_iNDEX) {
       openmlzs("com.zeelearn.mlzstapp", "mlzstapp","6504000882");
-      //lunchExternalApp('epfuture.innova.com.teacher_mlz');
     } else {
       lunchExternalApp('com.zeelearn.saarthi');
     }
   }
 
   String getSchoolCode(String school) {
-    String code = "mxxbjk";
+    String code = "";
     if (school.toLowerCase().contains('goa')) {
       code = 'mxxbjk';
     } else if (school.toLowerCase().contains('nagpur')) {
@@ -809,6 +787,13 @@ class _MyHomePageState extends State<HomePage>
   }
 
   lunchExternalApp(String package) async {
+
+    // await LaunchApp.openApp(
+    //               androidPackageName: package,
+    //               iosUrlScheme: 'http://kidzee.com',
+    //               appStoreLink: 'https://apps.apple.com/in/app/kidzeeapp/id1338356944',
+    //               openStore: false
+    //             );
     try {
       ///checks if the app is installed on your mobile device
       print(package);

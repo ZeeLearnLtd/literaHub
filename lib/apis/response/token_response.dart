@@ -1,3 +1,11 @@
+
+import 'dart:convert';
+
+TokenResponse tokenRespFromJson(String str) => TokenResponse.fromJson(json.decode(str));
+
+String tokenRespToJson(TokenResponse data) => json.encode(data.toJson());
+
+
 class TokenResponse {
   String? status;
   String? message;

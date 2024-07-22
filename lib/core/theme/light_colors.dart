@@ -9,7 +9,7 @@ final kPrimaryLightColor = HexColor.fromHex('#1b99ed');
 
 const kDefaultPadding = 20.0;
 
-const kPrimaryColor = Color(0xFF366CF6);
+const kPrimaryColor = Color.fromARGB(255, 72, 114, 218);
 const kSecondaryColor = Color(0xFFF5F6FC);
 const kBgLightColor = Color(0xFFF2F4FC);
 const kBgDarkColor = Color(0xFFEBEDFA);
