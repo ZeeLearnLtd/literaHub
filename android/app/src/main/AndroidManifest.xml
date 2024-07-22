@@ -2,6 +2,8 @@
 <queries>
    <package android:name="com.zeelearn.zllsaathi" />
    <package android:name="com.application.freadom" />
+   <package android:name="com.zeelearn.ekidzee" />
+   <package android:name="com.zeelearn.mlzsv1" />
    <package android:name="com.innova.students_mlz_epfuture" />
    <package android:name="epfuture.innova.com.teacher_mlz" />
    <package android:name="epfuture.innova.com.teacher_mlz" />

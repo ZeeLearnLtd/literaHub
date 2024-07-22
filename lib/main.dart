@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:literahub/firebase_options.dart';
+import 'package:literahub/screens/auth/views/homecontroller.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import 'core/route/customRouter.dart';
@@ -31,15 +32,16 @@ class MyApp extends StatelessWidget {
       title: 'LiteraHub',
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
-      onGenerateRoute: CustomRouter.onGenerateRoute,
-      initialRoute: RouteConstant.initialPage,
-      routes: {
-        RouteConstant.initialPage: (context) => const LoginScreen(),
-        RouteConstant.loginPage: (context) => const LoginScreen(),
-        // RouteConstant.dashboardPage: (context) => const DashboardWeb(),
-        //RouteConstant.zllsaathi: (context) => AddNewTicketForWeb(),
-        // RouteConstant.ticketDetailMobilePage: (context) => TicketDetails(),
-      },
+      //onGenerateRoute: CustomRouter.onGenerateRoute,
+      //initialRoute: RouteConstant.initialPage,
+      home: HomeControlPage(),
+      // routes: {
+      //   RouteConstant.initialPage: (context) => const LoginScreen(),
+      //   RouteConstant.loginPage: (context) => const LoginScreen(),
+      //   // RouteConstant.dashboardPage: (context) => const DashboardWeb(),
+      //   //RouteConstant.zllsaathi: (context) => AddNewTicketForWeb(),
+      //   // RouteConstant.ticketDetailMobilePage: (context) => TicketDetails(),
+      // },
 
       builder: (context, child) => ResponsiveBreakpoints.builder(
         child: child!,
