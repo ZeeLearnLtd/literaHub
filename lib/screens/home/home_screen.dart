@@ -722,9 +722,7 @@ class _MyHomePageState extends State<HomePage>
           userinfo.branchList![0].branchName!,
           grade,
           userPassword);
-      print(model.toJson());
       bool isInstalled = await DeviceApps.isAppInstalled(packageName);
-
       if (isInstalled) {
         String encoded = base64
             .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
