@@ -699,7 +699,7 @@ class _MyHomePageState extends State<HomePage>
     }
   }
 
-  openMllApp(String packageName) async {
+  openMllApp(String packageName, String schema) async {
     Subroot userinfo = widget.userInfo.root!.subroot!;
     //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
     if (userinfo.branchList![0].batchList == null ||
@@ -727,8 +727,9 @@ class _MyHomePageState extends State<HomePage>
         String encoded = base64
             .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
         //String decoded = utf8.decode(base64.decode(encoded));
+        //epfapp
         applaunchUrl(Uri.parse(
-            "epfapp://open?username=$userName,password=$userPassword"));
+            "${schema}://open?username=$userName,password=$userPassword"));
       } else {
         await LaunchApp.openApp(
             androidPackageName: packageName,
@@ -797,15 +798,16 @@ class _MyHomePageState extends State<HomePage>
         }
       }
     } else if (action == MYSCHOOLiNDEX) {
-      openMllApp('com.innova.students_mlz_epfuture');
+      openMllApp('com.innova.students_mlz_epfuture', 'openMllApp');
     } else if (action == TEACHER_OPERATION_iNDEX) {
-      lunchExternalApp('eplusreg.innova.com.teacher_epfuture');
+      //lunchExternalApp('eplusreg.innova.com.teacher_epfuture');
+      openMllApp('eplusreg.innova.com.teacher_epfuture', 'epfTeacherApp');
     } else if (action == EXTENDED_CLASSROOM_iNDEX) {
       openmlzs("com.zeelearn.mlzsapp", "mlzsapp", "6463385772");
     } else if (action == PENTEMIND_iNDEX) {
       openPentemind();
     } else if (action == SCHOOL_OPERATION_iNDEX) {
-      openMllApp('com.innova.mis_ep_future');
+      openMllApp('com.innova.mis_ep_future', 'openMllApp');
     } else if (action == STUDENT_ANALYTICS_iNDEX) {
       openmlzs("com.zeelearn.mlzstapp", "mlzstapp", "6504000882");
     } else {
