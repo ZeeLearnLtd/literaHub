@@ -50,8 +50,11 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   external_app_launcher: ^4.0.0
+  in_app_update: ^4.2.2
+  app_version_update: ^5.0.1
   saathi:
     path: ../ZeeSathi/
+  package_info_plus: ^8.0.1
 
 dependency_overrides:
   device_info_plus: ^10.0.0

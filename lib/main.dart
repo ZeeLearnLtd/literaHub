@@ -2,7 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:literahub/firebase_options.dart';
+import 'package:literahub/globals.dart';
 import 'package:literahub/screens/auth/views/homecontroller.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import 'core/route/customRouter.dart';
@@ -15,6 +17,8 @@ void main() async{
   await Firebase.initializeApp(
   options: DefaultFirebaseOptions.currentPlatform,
   );
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  appVersion = packageInfo.version;
   runApp(const MyApp());
 }
 

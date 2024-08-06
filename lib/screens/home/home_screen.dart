@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:app_version_update/app_version_update.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/foundation.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:literahub/apis/response/user_response.dart';
 import 'package:literahub/globals.dart';
 import 'package:literahub/iface/onClick.dart';
@@ -70,11 +72,57 @@ class _MyHomePageState extends State<HomePage>
   BranchList? _selectedBranch = null;
   String userPassword = '';
   String userName = '';
+  AppUpdateInfo? _updateInfo;
 
   @override
   void initState() {
     super.initState();
     getUserInfo();
+  }
+
+  Future<void> checkUpdate() async {
+    if (kIsWeb) {
+    } else if (!kIsWeb && Platform.isAndroid) {
+      InAppUpdate.checkForUpdate().then((info) {
+        setState(() {
+          _updateInfo = info;
+          if (_updateInfo?.updateAvailability ==
+              UpdateAvailability.updateAvailable) {
+            InAppUpdate.performImmediateUpdate()
+                .catchError((e) => showSnack(e.toString()));
+          }
+        });
+      }).catchError((e) {
+        //showSnack(e.toString());
+      });
+    } else if (Platform.isIOS) {
+      _verifyVersion();
+    }
+  }
+
+  void showSnack(String text) {
+    if (_scaffoldKey.currentContext != null) {
+      ScaffoldMessenger.of(_scaffoldKey.currentContext!)
+          .showSnackBar(SnackBar(content: Text(text)));
+    }
+  }
+
+  void _verifyVersion() async {
+    await AppVersionUpdate.checkForUpdates(
+      appleId: '6511244586',
+      playStoreId: 'com.zeelearn.literahub',
+    ).then((result) async {
+      if (result.canUpdate!) {
+        await AppVersionUpdate.showBottomSheetUpdate(
+            context: context,
+            appVersionResult: result,
+            mandatory: true,
+            title: 'App Update Avaliable',
+            content: const Text(
+                'New version of our LiteriaHub application is now available, and we highly recommend that you install it to benefit from its enhanced features and improved security.'));
+      }
+    });
+    // TODO: implement initState
   }
 
   getUserInfo() async {
@@ -678,7 +726,7 @@ class _MyHomePageState extends State<HomePage>
         await LaunchApp.openApp(
             androidPackageName: 'com.zeelearn.mlzsv1',
             iosUrlScheme:
-                'https://zllsaathi.zeelearn.com/', //'kidzeeApp://?login=true&username=F2354&password=Kidzee#123',
+                'https://zllsaathi.zeelearn.com/login?username=${userName}&password=${userPassword}', //'kidzeeApp://?login=true&username=F2354&password=Kidzee#123',
             appStoreLink:
                 'https://apps.apple.com/in/app/kidzeeapp/id1338356944',
             openStore: true);
