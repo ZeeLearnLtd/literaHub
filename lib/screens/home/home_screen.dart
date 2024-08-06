@@ -136,6 +136,11 @@ class _MyHomePageState extends State<HomePage>
         userinfo!.root!.subroot != null &&
         userinfo!.root!.subroot!.branchList != null) {
       _selectedBranch = userinfo!.root!.subroot!.branchList![0];
+      try{
+        batchController.text = _selectedBranch!.branchName!;
+        branchController.text = _selectedBranch!.batchList![0]!.batchName!;
+      }catch(e){}
+      
     }
     //print(userinfo!.toJson());
     generateMenu();
@@ -143,6 +148,7 @@ class _MyHomePageState extends State<HomePage>
 
   generateMenu() {
     print('User Role ${widget.userInfo.root!.subroot!.userRole}');
+    print('selected batch is ${branchController.text}');
     menuItems.clear();
     if (LocalConstant.flavor == 'Fradom') {
       menuItems.add(HomeMenuItem(
@@ -167,8 +173,7 @@ class _MyHomePageState extends State<HomePage>
         .contains('teach')) {
       print('in 94 teacher found');
       if (_selectedBranch != null) {
-        if (_selectedBranch!.schoolgroup!.toLowerCase().contains('k5') ||
-            _selectedBranch!.schoolgroup!.toLowerCase().contains('k12')) {
+        if (branchController.text.toString().toLowerCase().contains('class')) {
           //1 to 12 class
           getTeacher1to12Menu();
         } else {
@@ -183,8 +188,7 @@ class _MyHomePageState extends State<HomePage>
         .toLowerCase()
         .contains('stud')) {
       if (_selectedBranch != null) {
-        if (_selectedBranch!.schoolgroup!.toLowerCase().contains('k5') ||
-            _selectedBranch!.schoolgroup!.toLowerCase().contains('k12')) {
+        if (branchController.text.toString().toLowerCase().contains('class')) {
           //1 to 12 class
           getStudent1to12Menu();
         } else {
@@ -313,8 +317,7 @@ class _MyHomePageState extends State<HomePage>
           EXTENDED_CLASSROOM, 'exclassroom'));
     } else {
       menuItems.add(HomeMenuItem(MYSCHOOLiNDEX, MYSCHOOL, MYSCHOOL, 'myclass'));
-      menuItems.add(
-          HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
       menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     }
@@ -530,7 +533,7 @@ class _MyHomePageState extends State<HomePage>
                     branchController.text.toString().isNotEmpty
                         ? branchController.text.toString()
                         : 'Class ',
-                    style: LightColors.headerBoldStyle,
+                    style: LightColors.subtitleStyle10White,
                   ),
                   Icon(
                     Icons.arrow_drop_down,
@@ -644,8 +647,7 @@ class _MyHomePageState extends State<HomePage>
   openmlzs(String packageName, String schema, String appleId) async {
     Subroot userinfo = widget.userInfo.root!.subroot!;
     //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
-    if (userinfo.branchList![0].batchList == null ||
-        userinfo.branchList![0].batchList!.length == 0) {
+    if (userinfo.branchList![0].batchList == null || userinfo.branchList![0].batchList!.length == 0) {
       Utility.showAlert(
           context, 'Batch not configured, Please connect with your center ');
     } else {
@@ -674,15 +676,11 @@ class _MyHomePageState extends State<HomePage>
           iosUrlScheme: 'https://${schema}://');
       print('App Found Status ${isAvaliable}');
       if (isAvaliable && Platform.isAndroid) {
-        applaunchUrl(Uri.parse("https://${schema}://?data=${encoded}"));
-        // }else{
-        //   final url = Uri.parse(
-        //     Platform.isAndroid
-        //         ? "https://play.google.com/store/apps/details?id=com.zeelearn.ekidzee&hl=en_IN"
-        //         : "https://apps.apple.com/app/id$appleId",
-        //   );
-        //   ///if the app is not installed it lunches google play store so you can install it from there
-        //   launchUrl(url,mode: LaunchMode.externalApplication);
+        //applaunchUrl(Uri.parse("https://${schema}://?data=${encoded}"));
+
+       applaunchUrl(Uri.parse(
+            "http://${schema}?username=$userName,password=$userPassword"));
+        //applaunchUrl(Uri.parse("${schema}://?data=${encoded}"));
       } else if (isAvaliable) {
         if (isAvaliable) {
           await LaunchApp.openApp(
@@ -846,10 +844,11 @@ class _MyHomePageState extends State<HomePage>
         }
       }
     } else if (action == MYSCHOOLiNDEX) {
-      openMllApp('com.innova.students_mlz_epfuture', 'openMllApp');
+      //openMllApp
+      openMllApp('com.innova.students_mlz_epfuture', 'epfapp');
     } else if (action == TEACHER_OPERATION_iNDEX) {
-      //lunchExternalApp('eplusreg.innova.com.teacher_epfuture');
-      openMllApp('eplusreg.innova.com.teacher_epfuture', 'epfTeacherApp');
+      lunchExternalApp('eplusreg.innova.com.teacher_epfuture');
+      //openMllApp('eplusreg.innova.com.teacher_epfuture', 'epfTeacherApp');
     } else if (action == EXTENDED_CLASSROOM_iNDEX) {
       openmlzs("com.zeelearn.mlzsapp", "mlzsapp", "6463385772");
     } else if (action == PENTEMIND_iNDEX) {
@@ -923,6 +922,12 @@ class _MyHomePageState extends State<HomePage>
       bool isInstalled = await DeviceApps.isAppInstalled(package);
       if (isInstalled) {
         print('app found ${package}');
+        await LaunchApp.openApp(
+                  androidPackageName: package,
+                  iosUrlScheme: '',
+                  appStoreLink: 'https://apps.apple.com/in/app/kidzeeapp/id1338356944',
+                  openStore: false
+                );
       } else {
         print('app not found ${package}');
         final url = Uri.parse(
