@@ -78,11 +78,21 @@ class _MyHomePageState extends State<HomePage>
   void initState() {
     super.initState();
     getUserInfo();
+    WidgetsBinding.instance.addObserver(this);
+    checkUpdate();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('didChangeAppLifecycleState==================');
+    if(state == AppLifecycleState.resumed){
+      checkUpdate();
+    }
   }
 
   Future<void> checkUpdate() async {
     if (kIsWeb) {
-    } else if (!kIsWeb && Platform.isAndroid) {
+    } else if (Platform.isAndroid) {
       InAppUpdate.checkForUpdate().then((info) {
         setState(() {
           _updateInfo = info;
@@ -113,6 +123,7 @@ class _MyHomePageState extends State<HomePage>
       playStoreId: 'com.zeelearn.literahub',
     ).then((result) async {
       if (result.canUpdate!) {
+        print('---------update avaliable');
         await AppVersionUpdate.showBottomSheetUpdate(
             context: context,
             appVersionResult: result,
@@ -318,8 +329,7 @@ class _MyHomePageState extends State<HomePage>
     } else {
       menuItems.add(HomeMenuItem(MYSCHOOLiNDEX, MYSCHOOL, MYSCHOOL, 'myclass'));
       menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-      menuItems.add(HomeMenuItem(
-          MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      //menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     }
   }
 
@@ -679,7 +689,7 @@ class _MyHomePageState extends State<HomePage>
         //applaunchUrl(Uri.parse("https://${schema}://?data=${encoded}"));
 
        applaunchUrl(Uri.parse(
-            "http://${schema}?username=$userName,password=$userPassword"));
+            "${schema}://open?data=${encoded}"));
         //applaunchUrl(Uri.parse("${schema}://?data=${encoded}"));
       } else if (isAvaliable) {
         if (isAvaliable) {
