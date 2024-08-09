@@ -785,7 +785,7 @@ class _MyHomePageState extends State<HomePage>
         //String decoded = utf8.decode(base64.decode(encoded));
         //epfapp
         applaunchUrl(Uri.parse(
-            "${schema}://open?username=$userName,password=$userPassword"));
+            "epfTeacherApp://open?username=$userName,password=$userPassword"));
       } else {
         await LaunchApp.openApp(
             androidPackageName: packageName,
@@ -857,8 +857,8 @@ class _MyHomePageState extends State<HomePage>
       //openMllApp
       openMllApp('com.innova.students_mlz_epfuture', 'epfapp');
     } else if (action == TEACHER_OPERATION_iNDEX) {
-      lunchExternalApp('eplusreg.innova.com.teacher_epfuture');
-      //openMllApp('eplusreg.innova.com.teacher_epfuture', 'epfTeacherApp');
+      //lunchExternalApp('eplusreg.innova.com.teacher_epfuture');
+      openMllApp('eplusreg.innova.com.teacher_mlz_epfuture', 'epfTeacherApp');
     } else if (action == EXTENDED_CLASSROOM_iNDEX) {
       openmlzs("com.zeelearn.mlzsapp", "mlzsapp", "6463385772");
     } else if (action == PENTEMIND_iNDEX) {
