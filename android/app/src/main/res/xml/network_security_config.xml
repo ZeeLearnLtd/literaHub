@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--suppress ALL -->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">api.dyntube.com</domain>
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">202.46.202.97</domain>
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.112.3.50</domain>
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">amazonaws.com</domain>
+    </domain-config>
+
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">conference.zeelearn.in</domain>
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">tawk.to</domain>
+    </domain-config>
+
+        <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">googleapis.com</domain>
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">zeelearn.com</domain>
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">api.zoom.us</domain>
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">202.46.202.116</domain>
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">app.ekidzee.com</domain>
+    </domain-config>
+
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">api.zeelearn.com</domain>
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">ecampus.ekidzee.com</domain>
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">ecampus.kidzeeplus.com</domain>
+    </domain-config>
+
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">www.ekidzee.com</domain>
+    </domain-config><domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">api.ekidzee.com</domain>
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">app.kidzeeplus.com</domain>
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">kidzee.com</domain>
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">103.241.146.154</domain>
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">127.0.0.1</domain><!-- for *HttpServer -->
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">facebook.com</domain><!-- for *HttpServer -->
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">twitter.com</domain><!-- for *HttpServer -->
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">pentemind.com</domain><!-- for *HttpServer -->
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">stagingapipentemindcom.eba-2z8hhxmy.us-east-1.elasticbeanstalk.com</domain><!-- for *HttpServer -->
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">elasticbeanstalk.com</domain><!-- for *HttpServer -->
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">pentemind-app.s3-website.ap-south-1.amazonaws.com</domain><!-- for *HttpServer -->
+    </domain-config>
+     <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">web.app</domain><!-- for *HttpServer -->
+    </domain-config>
+</network-security-config>

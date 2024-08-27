@@ -90,22 +90,36 @@ class _MyHomePageState extends State<HomePage>
     }
   }
 
+  androidupdate(){
+    
+  }
+
   Future<void> checkUpdate() async {
     if (kIsWeb) {
     } else if (Platform.isAndroid) {
+      final InAppUpdate inAppUpdate = InAppUpdate();
       InAppUpdate.checkForUpdate().then((info) {
         setState(() {
           _updateInfo = info;
-          if (_updateInfo?.updateAvailability ==
-              UpdateAvailability.updateAvailable) {
-            InAppUpdate.performImmediateUpdate()
-                .catchError((e) => showSnack(e.toString()));
-          }
+          if (_updateInfo?.updateAvailability == UpdateAvailability.updateAvailable) {
+              
+              }
         });
       }).catchError((e) {
-        //showSnack(e.toString());
+        // print(e);
+        // //showSnack(e.toString());
+        //  //if (_updateInfo?.updateAvailability == UpdateAvailability.updateAvailable) {
+        //       final url = Uri.parse(
+        //       Platform.isAndroid
+        //           ? "https://play.google.com/store/apps/details?id=com.zeelearn.literahub&hl=en_IN"
+        //           : "https://apps.apple.com/app/id6511244586",
+        //     );
+
+        //     ///if the app is not installed it lunches google play store so you can install it from there
+        //     launchUrl(url, mode: LaunchMode.externalApplication);
+        //      // }
       });
-    } else if (Platform.isIOS) {
+    } else if ( Platform.isIOS) {
       _verifyVersion();
     }
   }
@@ -135,7 +149,7 @@ class _MyHomePageState extends State<HomePage>
     });
     // TODO: implement initState
   }
-
+  String schoolCode = '';
   getUserInfo() async {
     var box = await Utility.openBox();
     String json = box.get(LocalConstant.KEY_LOGIN_RESPONSE);
@@ -151,6 +165,7 @@ class _MyHomePageState extends State<HomePage>
         batchController.text = _selectedBranch!.branchName!;
         branchController.text = _selectedBranch!.batchList![0]!.batchName!;
       }catch(e){}
+      schoolCode = (userinfo!.root!.subroot!.branchList![0].branchId!);
       
     }
     //print(userinfo!.toJson());
@@ -162,13 +177,15 @@ class _MyHomePageState extends State<HomePage>
     print('selected batch is ${branchController.text}');
     menuItems.clear();
     if (LocalConstant.flavor == 'Fradom') {
-      menuItems.add(HomeMenuItem(
-          MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     } else if (Platform.isIOS) {
       menuItems.add(
           HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
       menuItems.add(
           HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      if(schoolCode.isNotEmpty)
+      menuItems.add(HomeMenuItem(
+          MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
       //menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));
       //menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
     } else if (widget.userInfo.root!.subroot!.userRole!
@@ -277,6 +294,7 @@ class _MyHomePageState extends State<HomePage>
       menuItems.add(HomeMenuItem(MYSCHOOLiNDEX, MYSCHOOL, MYSCHOOL, 'myclass'));
       menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
           EXTENDED_CLASSROOM, 'exclassroom'));
+          if(schoolCode.isNotEmpty)
       menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
       //menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
@@ -311,6 +329,7 @@ class _MyHomePageState extends State<HomePage>
           EXTENDED_CLASSROOM, 'exclassroom'));
       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
           STUDENT_ANALYTICS, 'studentanalytis'));
+          if(schoolCode.isNotEmpty)
       menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     }
@@ -357,6 +376,7 @@ class _MyHomePageState extends State<HomePage>
           STUDENT_ANALYTICS, 'studentanalytis'));
       menuItems.add(
           HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+          if(schoolCode.isNotEmpty)
       menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     }
@@ -409,6 +429,7 @@ class _MyHomePageState extends State<HomePage>
           EXTENDED_CLASSROOM, 'exclassroom'));
       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
           STUDENT_ANALYTICS, 'studentanalytis'));
+          if(schoolCode.isNotEmpty)
       menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
       menuItems.add(
@@ -435,6 +456,7 @@ class _MyHomePageState extends State<HomePage>
       //     STUDENT_ANALYTICS, 'studentanalytis'));
       // menuItems.add(
       //     HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      if(schoolCode.isNotEmpty)
       menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
       menuItems.add(
@@ -784,8 +806,8 @@ class _MyHomePageState extends State<HomePage>
             .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
         //String decoded = utf8.decode(base64.decode(encoded));
         //epfapp
-        applaunchUrl(Uri.parse(
-            "epfTeacherApp://open?username=$userName,password=$userPassword"));
+        //applaunchUrl(Uri.parse("${schema}://open?username=$userName,password=$userPassword"));
+        launchUrl(Uri.parse("epfTeacherApp://open?username=EKAM105,password=12345"));
       } else {
         await LaunchApp.openApp(
             androidPackageName: packageName,
@@ -832,7 +854,7 @@ class _MyHomePageState extends State<HomePage>
               name: userinfo.userName!,
               grade: /*userinfo.userType=='Teacher' ? */
                   'Grade ${mGrade.trim()}' /* : 'Grade ${grade.trim()}'*/,
-              schoolCode: getSchoolCode(userinfo.branchList![0].branchName!),
+              schoolCode: getSchoolCode(userinfo.branchList![0].branchId!),
               deviceType: 'Android',
               description: 'MH',
               schoolClass: userinfo.userType == 'Teacher' ? className : grade,
@@ -859,6 +881,7 @@ class _MyHomePageState extends State<HomePage>
     } else if (action == TEACHER_OPERATION_iNDEX) {
       //lunchExternalApp('eplusreg.innova.com.teacher_epfuture');
       openMllApp('eplusreg.innova.com.teacher_mlz_epfuture', 'epfTeacherApp');
+      //openMllApp('com.innova.mis_ep_future', 'openMllApp');
     } else if (action == EXTENDED_CLASSROOM_iNDEX) {
       openmlzs("com.zeelearn.mlzsapp", "mlzsapp", "6463385772");
     } else if (action == PENTEMIND_iNDEX) {
@@ -874,15 +897,15 @@ class _MyHomePageState extends State<HomePage>
 
   String getSchoolCode(String school) {
     String code = "";
-    if (school.toLowerCase().contains('goa')) {
+    if (school.toLowerCase().contains('REGUGA1111')) {
       code = 'mxxbjk';
-    } else if (school.toLowerCase().contains('nagpur')) {
+    } else if (school.toLowerCase().contains('REGUGA1114')) {
       code = 'skttcj';
-    } else if (school.toLowerCase().contains('patiala')) {
+    } else if (school.toLowerCase().contains('REGUGA1113')) {
       code = 'gwqfhm';
-    } else if (school.toLowerCase().contains('karnal')) {
+    } else if (school.toLowerCase().contains('REGUGA1115')) {
       code = 'unbhzy';
-    } else if (school.toLowerCase().contains('bathinda')) {
+    } else if (school.toLowerCase().contains('REGUGA1112')) {
       code = 'mawjwn';
     }
     return code;
