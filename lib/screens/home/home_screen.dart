@@ -804,17 +804,13 @@ class _MyHomePageState extends State<HomePage>
       if (isInstalled) {
         String encoded = base64
             .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
-        //String decoded = utf8.decode(base64.decode(encoded));
-        //epfapp
-        //applaunchUrl(Uri.parse("${schema}://open?username=$userName,password=$userPassword"));
-        launchUrl(Uri.parse("epfTeacherApp://open?username=EKAM105,password=12345"));
+        applaunchUrl(Uri.parse("${schema}://open?username=$userName,password=$userPassword"));
       } else {
         await LaunchApp.openApp(
             androidPackageName: packageName,
             iosUrlScheme: '',
             appStoreLink: '',
             openStore: true);
-        //launchUrl(Uri.parse("market://details?id=${packageName}?" + model.toJson()));
       }
     }
   }
