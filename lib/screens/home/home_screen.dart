@@ -806,8 +806,8 @@ class _MyHomePageState extends State<HomePage>
             .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
         //String decoded = utf8.decode(base64.decode(encoded));
         //epfapp
-        //applaunchUrl(Uri.parse("${schema}://open?username=$userName,password=$userPassword"));
-        launchUrl(Uri.parse("epfTeacherApp://open?username=EKAM105,password=12345"));
+        applaunchUrl(Uri.parse("${schema}://open?username=$userName,password=$userPassword"));
+        //launchUrl(Uri.parse("epfTeacherApp://open?username=EKAM105,password=12345"));
       } else {
         await LaunchApp.openApp(
             androidPackageName: packageName,
@@ -897,15 +897,16 @@ class _MyHomePageState extends State<HomePage>
 
   String getSchoolCode(String school) {
     String code = "";
-    if (school.toLowerCase().contains('REGUGA1111')) {
+    print('branch id ${school}');
+    if (school.contains('REGUGA1111')) {
       code = 'mxxbjk';
-    } else if (school.toLowerCase().contains('REGUGA1114')) {
+    } else if (school.contains('REGUGA1114')) {
       code = 'skttcj';
-    } else if (school.toLowerCase().contains('REGUGA1113')) {
+    } else if (school.contains('REGUGA1113')) {
       code = 'gwqfhm';
-    } else if (school.toLowerCase().contains('REGUGA1115')) {
+    } else if (school.contains('REGUGA1115')) {
       code = 'unbhzy';
-    } else if (school.toLowerCase().contains('REGUGA1112')) {
+    } else if (school.contains('REGUGA1112')) {
       code = 'mawjwn';
     }
     return code;
