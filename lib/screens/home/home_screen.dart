@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:app_version_update/app_version_update.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -17,6 +19,7 @@ import 'package:literahub/model/MllModel.dart';
 import 'package:literahub/model/menuitem.dart';
 import 'package:literahub/screens/auth/views/login.dart';
 import 'package:literahub/screens/login/login_screen.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:saathi/zllsaathi.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -26,6 +29,7 @@ import '../../apis/response/fradom_response.dart';
 import '../../core/constant/LocalConstant.dart';
 import '../../core/theme/light_colors.dart';
 import '../../core/utility.dart';
+import '../../firebase_options.dart';
 import '../../iface/onResponse.dart';
 import '../../widgets/dropdown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -79,7 +83,7 @@ class _MyHomePageState extends State<HomePage>
     super.initState();
     getUserInfo();
     WidgetsBinding.instance.addObserver(this);
-    checkUpdate();
+    //checkUpdate();
   }
 
   @override
@@ -94,7 +98,101 @@ class _MyHomePageState extends State<HomePage>
     
   }
 
-  Future<void> checkUpdate() async {
+  checkUpdate() async{
+    try{
+      print('Check update started...');
+      final remoteConfig = FirebaseRemoteConfig.instance;
+      await remoteConfig.setConfigSettings(RemoteConfigSettings(
+          fetchTimeout: const Duration(minutes: 2),
+          minimumFetchInterval: const Duration(hours: 1),
+      ));
+
+    // Fetch Remote Config values
+      await remoteConfig.fetchAndActivate();
+      // Get the latest version from Remote Config
+      final latestVersion = remoteConfig.getString('app_version');
+      print('Latest Verison ${latestVersion}');
+      if (latestVersion.isEmpty) {
+        return; // Handle the case where there's no version info
+      }
+
+      // Get the current app version
+      final packageInfo = await PackageInfo.fromPlatform();
+      final currentVersion = packageInfo.buildNumber;
+      print('currentVersion Verison ${currentVersion}');
+      // Compare versions
+      if (_isUpdateAvailable(currentVersion, latestVersion)) {
+
+        showUpdateAlert(packageInfo.packageName);
+        //_promptForUpdate(packageInfo.packageName);
+      }
+
+    }catch(e){
+      print('Erorr in 125 ${e.toString()}');
+    }
+  }
+
+  showUpdateAlert(String package){
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Alert"),
+          content: Text('New Version of Application are avaliable, Please Update the App'),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            ElevatedButton(
+              onPressed: () {
+                _promptForUpdate(package);
+                Navigator.of(context).pop();
+                
+              },
+              // style: ButtonStyle(elevation: MaterialStateProperty(12.0 )),
+              style: ElevatedButton.styleFrom(
+                  elevation: 10.0,
+                  textStyle: TextStyle(color: kPrimaryLightColor)),
+              child: Text(
+                'Update',
+                style: LightColors.textSmallHightliteStyle,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+   bool _isUpdateAvailable(String currentVersion, String latestVersion) {
+    final current = _parseVersion(currentVersion);
+    final latest = _parseVersion(latestVersion);
+    return latest != null && (latest > current!);
+  }
+
+  int? _parseVersion(String version) {
+    try {
+      final parts = version.split('.');
+      return int.parse(parts.join());
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> _promptForUpdate(package) async {
+    const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.zeelearn.literahub&hl=en';
+    // await LaunchApp.openApp(
+    //         androidPackageName: 'com.zeelearn.literahub',
+    //         iosUrlScheme: '',
+    //         appStoreLink: 'https://play.google.com/store/apps/details?id=com.zeelearn.literahub&hl=en',
+    //         openStore: true);
+    if (await canLaunch(playStoreUrl)) {
+      await launch(playStoreUrl);
+    } else {
+      throw 'Could not launch $playStoreUrl';
+    }
+  }
+
+  Future<void> checkUpdate1() async {
     if (kIsWeb) {
     } else if (Platform.isAndroid) {
       final InAppUpdate inAppUpdate = InAppUpdate();
@@ -151,6 +249,7 @@ class _MyHomePageState extends State<HomePage>
   }
   String schoolCode = '';
   getUserInfo() async {
+    await Firebase.initializeApp();
     var box = await Utility.openBox();
     String json = box.get(LocalConstant.KEY_LOGIN_RESPONSE);
     userName = box.get(LocalConstant.KEY_LOGIN_USERNAME);
@@ -165,7 +264,7 @@ class _MyHomePageState extends State<HomePage>
         batchController.text = _selectedBranch!.branchName!;
         branchController.text = _selectedBranch!.batchList![0]!.batchName!;
       }catch(e){}
-      schoolCode = (userinfo!.root!.subroot!.branchList![0].branchId!);
+      schoolCode = getSchoolCode(userinfo!.root!.subroot!.branchList![0].branchId!);
       
     }
     //print(userinfo!.toJson());
@@ -788,22 +887,10 @@ class _MyHomePageState extends State<HomePage>
       String grade = userinfo.branchList![0].batchList![0]!.batchName!
           .split('/')[1]
           .trim();
-
-      MLLModel model = MLLModel(
-          userinfo.userId!,
-          userinfo.userName!,
-          userName,
-          '',
-          '',
-          '',
-          '',
-          userinfo.branchList![0].branchName!,
-          grade,
-          userPassword);
+      print("${schema}://open?username=$userName,password=$userPassword");
       bool isInstalled = await DeviceApps.isAppInstalled(packageName);
       if (isInstalled) {
-        String encoded = base64
-            .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
+        // dXNlcm5hbWU6cGFzc3dvcmQ=
         applaunchUrl(Uri.parse("${schema}://open?username=$userName,password=$userPassword"));
       } else {
         await LaunchApp.openApp(
@@ -819,8 +906,8 @@ class _MyHomePageState extends State<HomePage>
   void onClick(int action, value) {
     if (action == ZLL_SAATHI_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
-      ZllSaathi(context, '14002035', null);
-      //ZllSaathiNative(context, userName, '2',getUserRole(userinfo.userType!) , '0', kPrimaryLightColor, null);
+      //ZllSaathi(context, '14002035', null);
+      ZllSaathiNative(context, userName, '2',getUserRole(userinfo.userType!) , '0', kPrimaryLightColor, null);
     } else if (action == MLZS_READING_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
       print(userinfo.toJson());
@@ -893,15 +980,16 @@ class _MyHomePageState extends State<HomePage>
 
   String getSchoolCode(String school) {
     String code = "";
-    if (school.toLowerCase().contains('REGUGA1111')) {
+    print('SCHOOL CODE IS ${school}');
+    if (school.contains('REGUGA1111')) {
       code = 'mxxbjk';
-    } else if (school.toLowerCase().contains('REGUGA1114')) {
+    } else if (school.contains('REGUGA1114')) {
       code = 'skttcj';
-    } else if (school.toLowerCase().contains('REGUGA1113')) {
+    } else if (school.contains('REGUGA1113')) {
       code = 'gwqfhm';
-    } else if (school.toLowerCase().contains('REGUGA1115')) {
+    } else if (school.contains('REGUGA1115')) {
       code = 'unbhzy';
-    } else if (school.toLowerCase().contains('REGUGA1112')) {
+    } else if (school.contains('REGUGA1112')) {
       code = 'mawjwn';
     }
     return code;

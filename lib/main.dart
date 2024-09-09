@@ -15,7 +15,7 @@ import 'screens/login/login_screen.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-  options: DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.currentPlatform,
   );
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   appVersion = packageInfo.version;
