@@ -100,31 +100,34 @@ class _MyHomePageState extends State<HomePage>
 
   checkUpdate() async{
     try{
-      print('Check update started...');
-      final remoteConfig = FirebaseRemoteConfig.instance;
-      await remoteConfig.setConfigSettings(RemoteConfigSettings(
-          fetchTimeout: const Duration(minutes: 2),
-          minimumFetchInterval: const Duration(hours: 1),
-      ));
+      if (kIsWeb) {
+      } else if (Platform.isAndroid) {
+          print('Check update started...');
+          final remoteConfig = FirebaseRemoteConfig.instance;
+          await remoteConfig.setConfigSettings(RemoteConfigSettings(
+              fetchTimeout: const Duration(minutes: 2),
+              minimumFetchInterval: const Duration(hours: 1),
+          ));
 
-    // Fetch Remote Config values
-      await remoteConfig.fetchAndActivate();
-      // Get the latest version from Remote Config
-      final latestVersion = remoteConfig.getString('app_version');
-      print('Latest Verison ${latestVersion}');
-      if (latestVersion.isEmpty) {
-        return; // Handle the case where there's no version info
-      }
+        // Fetch Remote Config values
+          await remoteConfig.fetchAndActivate();
+          // Get the latest version from Remote Config
+          final latestVersion = remoteConfig.getString('app_version');
+          print('Latest Verison ${latestVersion}');
+          if (latestVersion.isEmpty) {
+            return; // Handle the case where there's no version info
+          }
 
-      // Get the current app version
-      final packageInfo = await PackageInfo.fromPlatform();
-      final currentVersion = packageInfo.buildNumber;
-      print('currentVersion Verison ${currentVersion}');
-      // Compare versions
-      if (_isUpdateAvailable(currentVersion, latestVersion)) {
+          // Get the current app version
+          final packageInfo = await PackageInfo.fromPlatform();
+          final currentVersion = packageInfo.buildNumber;
+          print('currentVersion Verison ${currentVersion}');
+          // Compare versions
+          if (_isUpdateAvailable(currentVersion, latestVersion)) {
 
-        showUpdateAlert(packageInfo.packageName);
-        //_promptForUpdate(packageInfo.packageName);
+            showUpdateAlert(packageInfo.packageName);
+            //_promptForUpdate(packageInfo.packageName);
+          }
       }
 
     }catch(e){
