@@ -55,7 +55,7 @@ dependencies:
   saathi:
     path: ../ZeeSathi/
   package_info_plus: ^8.0.2
-  flutter_downloader: ^1.11.4
+  firebase_remote_config: ^5.1.0
 
 dependency_overrides:
   #device_info_plus: ^10.0.0
