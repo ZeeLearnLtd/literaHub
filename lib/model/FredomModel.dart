@@ -14,13 +14,13 @@ class FredomModel {
 
   toJson() {
     return jsonEncode({
-      'country_code': this.country_code,
-      'name': this.name,
-      'contact_no': this.contact_no,
-      'device_type': this.device_type,
-      'is_teacher': this.is_teacher,
-      'school': this.school,
-      'school_class': this.school_class,
+      'country_code': country_code,
+      'name': name,
+      'contact_no': contact_no,
+      'device_type': device_type,
+      'is_teacher': is_teacher,
+      'school': school,
+      'school_class': school_class,
     });
   }
 }

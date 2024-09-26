@@ -11,13 +11,13 @@ class UserResponse {
   UserResponse({this.root});
 
   UserResponse.fromJson(Map<String, dynamic> json) {
-    root = json['root'] != null ? new Root.fromJson(json['root']) : null;
+    root = json['root'] != null ? Root.fromJson(json['root']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.root != null) {
-      data['root'] = this.root!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (root != null) {
+      data['root'] = root!.toJson();
     }
     return data;
   }
@@ -30,19 +30,21 @@ class Root {
 
   Root.fromJson(Map<String, dynamic> json) {
     subroot =
-        json['subroot'] != null ? new Subroot.fromJson(json['subroot']) : null;
+        json['subroot'] != null ? Subroot.fromJson(json['subroot']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.subroot != null) {
-      data['subroot'] = this.subroot!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (subroot != null) {
+      data['subroot'] = subroot!.toJson();
     }
     return data;
   }
 }
 
 class Subroot {
+  String isfreedomaccess='';
+  String freedom_code='';
   String? message;
   String? userId;
   String? userName;
@@ -59,7 +61,10 @@ class Subroot {
   List<BranchList>? branchList;
 
   Subroot(
-      {this.message,
+      {
+      required this.isfreedomaccess,
+      required this.freedom_code,
+      this.message,
       this.userId,
       this.userName,
       this.emailId,
@@ -75,6 +80,9 @@ class Subroot {
       this.branchList});
 
   Subroot.fromJson(Map<String, dynamic> json) {
+    isfreedomaccess = json.containsKey('isfreedomaccess') ? json['isfreedomaccess'] ?? '' : '';
+    freedom_code =  json.containsKey('freedom_code') ? json['freedom_code'] ?? '' : '';
+    print('isfreedomaccess $isfreedomaccess');
     message = json['message'] ?? '';
     userId = json['user_id'] ?? '';
     userName = json['user_name'] ?? '';
@@ -96,33 +104,33 @@ class Subroot {
     if (json['branch_list'] != null) {
       branchList = <BranchList>[];
       json['branch_list'].forEach((v) {
-        branchList!.add(new BranchList.fromJson(v));
+        branchList!.add(BranchList.fromJson(v));
       });
     }
     }catch(e){
       branchList = <BranchList>[];
-      branchList!.add(new BranchList.fromJson(json['branch_list']));
+      branchList!.add(BranchList.fromJson(json['branch_list']));
     }
-    print('branch list is ${branchList}');
+    print('branch list is $branchList');
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['message'] = this.message;
-    data['user_id'] = this.userId;
-    data['user_name'] = this.userName;
-    data['email_id'] = this.emailId;
-    data['photopath'] = this.photopath;
-    data['contact'] = this.contact;
-    data['user_type'] = this.userType;
-    data['uid'] = this.uid;
-    data['AcdYear'] = this.acdYear;
-    data['user_role'] = this.userRole;
-    data['SNL_contact'] = this.sNLContact;
-    data['SNL_Email'] = this.sNLEmail;
-    data['ClassName'] = this.className;
-    if (this.branchList != null) {
-      data['branch_list'] = this.branchList!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['message'] = message;
+    data['user_id'] = userId;
+    data['user_name'] = userName;
+    data['email_id'] = emailId;
+    data['photopath'] = photopath;
+    data['contact'] = contact;
+    data['user_type'] = userType;
+    data['uid'] = uid;
+    data['AcdYear'] = acdYear;
+    data['user_role'] = userRole;
+    data['SNL_contact'] = sNLContact;
+    data['SNL_Email'] = sNLEmail;
+    data['ClassName'] = className;
+    if (branchList != null) {
+      data['branch_list'] = branchList!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -146,22 +154,22 @@ class BranchList {
       if (json['batch_list'] != null) {
         batchList = <BatchList>[];
         json['batch_list'].forEach((v) {
-          batchList!.add(new BatchList.fromJson(v));
+          batchList!.add(BatchList.fromJson(v));
         });
       }
     }catch(e){
       batchList = <BatchList>[];
-      batchList!.add(new BatchList.fromJson(json['batch_list']));
+      batchList!.add(BatchList.fromJson(json['batch_list']));
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['branch_id'] = this.branchId;
-    data['branch_name'] = this.branchName;
-    data['schoolgroup'] = this.schoolgroup;
-    if (this.batchList != null) {
-      data['batch_list'] = this.batchList!.map((v) => v?.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['branch_id'] = branchId;
+    data['branch_name'] = branchName;
+    data['schoolgroup'] = schoolgroup;
+    if (batchList != null) {
+      data['batch_list'] = batchList!.map((v) => v?.toJson()).toList();
     }
     return data;
   }
@@ -179,9 +187,9 @@ class BatchList {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['batch_name'] = this.batchName;
-    data['batch_id'] = this.batchId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['batch_name'] = batchName;
+    data['batch_id'] = batchId;
     return data;
   }
 }

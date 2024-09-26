@@ -16,6 +16,8 @@ class LocalConstant {
   static const String KEY_LOGIN_RESPONSE = "userinfo";
   static const String KEY_LOGIN_PASSWORD = "password";
   static const String KEY_LOGIN_USERNAME = "username";
+  static const String KEY_IS_FRADOM = "isfradom";
+  static const String KEY_FRADOM_SCHOOLCODE = "fradomcode";
 
   static const String BASE_URL = "https://globalapi.zeelearn.com/api/V1/";
   static const String FRADOM_BASE_URL = "https://api.getfreadom.com";//"https://stage.api.getfreadom.com";

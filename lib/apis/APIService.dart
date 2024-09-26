@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:literahub/apis/request/fradomdeeplink.dart';
@@ -81,7 +79,7 @@ getAuthHeader(String token){
       final response = await http.post(Uri.parse(url + LocalConstant.API_GET_LOGIN),
           headers: getAuthHeader(token),
           body: requestModel.toJson());
-      //print(response.body);
+      print(response.body);
       print('status code ${response.statusCode}');
       if (response.statusCode == 200 ) {
         debugPrint('response received ${response.body}');

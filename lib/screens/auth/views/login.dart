@@ -7,6 +7,8 @@ import 'package:literahub/screens/home/home_screen.dart';
 
 
 class LiteriaHubLoginPage extends StatefulWidget {
+  const LiteriaHubLoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -14,8 +16,8 @@ class LiteriaHubLoginPage extends StatefulWidget {
 class _LoginPageState extends State<LiteriaHubLoginPage> {
   final LoginController controller = Get.put(LoginController());
 
-  var _emailTextController = TextEditingController(text: "");
-  var _passwordTextController = TextEditingController(text: "");
+  final _emailTextController = TextEditingController(text: "");
+  final _passwordTextController = TextEditingController(text: "");
   var _passwordVisible = false;
   final _formKey = GlobalKey<FormState>();
   bool isChekced = true;
@@ -31,7 +33,7 @@ class _LoginPageState extends State<LiteriaHubLoginPage> {
               return Form(
                   key: _formKey,
                   child: Center(
-                    child: Container(
+                    child: SizedBox(
                       height: MediaQuery.of(context).size.height,
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -48,7 +50,7 @@ class _LoginPageState extends State<LiteriaHubLoginPage> {
                               enabled: !controller.loginProcess.value,
                               controller: _emailTextController,
                               decoration: InputDecoration(
-                                  icon: Icon(Icons.person), 
+                                  icon: const Icon(Icons.person), 
                                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(5)),
                                   labelText: "User Name"),
                               validator: (String? value) =>
@@ -90,7 +92,7 @@ class _LoginPageState extends State<LiteriaHubLoginPage> {
                                       isChekced  = value!;
                                     });
                                 }),
-                                Text('I accept the Terms and conditions')
+                                const Text('I accept the Terms and conditions')
                               ],
                             ),
                             const SizedBox(height: 12),
@@ -109,7 +111,7 @@ class _LoginPageState extends State<LiteriaHubLoginPage> {
                                         uid: _emailTextController.text,
                                         password: _passwordTextController.text);
                                     if(error is UserResponse){
-                                           Get.to(HomePage(userInfo: error as UserResponse,)); 
+                                           Get.to(HomePage(userInfo: error,)); 
                                     }else if (error != "") {
                                       Get.defaultDialog(
                                           title: "Oop!", middleText: error);

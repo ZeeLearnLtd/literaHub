@@ -12,6 +12,8 @@ import 'package:literahub/screens/auth/views/login.dart';
 import 'package:literahub/screens/home/home_screen.dart';
 
 class HomeControlPage extends StatefulWidget {
+  const HomeControlPage({super.key});
+
   @override
   _HomeControlPageState createState() => _HomeControlPageState();
 }
@@ -38,12 +40,13 @@ class _HomeControlPageState extends State<HomeControlPage> {
     return LiteriaHubLoginPage();
   }
 
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: goto(),
         builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Container(color:Colors.white, child: Center(child: Text('')));
+            return Container(color:Colors.white, child: const Center(child: Text('')));
           } else {
             return snapshot.data!;
           }

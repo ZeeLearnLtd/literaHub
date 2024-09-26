@@ -19,7 +19,7 @@ class ZeeDropDown<T> extends StatefulWidget {
   final TextStyle? textStyle;
 
   const ZeeDropDown(
-      {Key? key,
+      {super.key,
         required this.title,
         required this.textController,
         required this.hintText,
@@ -28,8 +28,7 @@ class ZeeDropDown<T> extends StatefulWidget {
         required this.onChanged,
         this.textStyle,
         this.backgroundColor,
-        this.enable})
-      : super(key: key);
+        this.enable});
 
   @override
   SimpleAccountMenuState<T> createState() => SimpleAccountMenuState<T>();

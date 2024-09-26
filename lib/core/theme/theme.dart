@@ -21,8 +21,8 @@ class Themes {
         //cancelButtonStyle: ButtonStyle(backgroundColor: MaterialStateProperty.all(LightColors.kRed),textStyle: MaterialStateProperty.all(TextStyle(color: Colors.black)) ),
         //confirmButtonStyle: ButtonStyle(backgroundColor: MaterialStateProperty.all(kPrimaryLightColor),textStyle: MaterialStateProperty.all(TextStyle(color: Colors.white)) ),
         //dayBackgroundColor: MaterialStateProperty.all(Colors.white),
-        dayBackgroundColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return kPrimaryLightColor
                 .withOpacity(0.4); // Your desired selected day color
           }
@@ -47,20 +47,20 @@ class Themes {
 
       /// TYPOGRAPHY
       textTheme: AppTextTheme.textTheme,
-      iconTheme: IconThemeData(
+      iconTheme: const IconThemeData(
         color: LightColors.primaryColor,
       ),
       checkboxTheme: CheckboxThemeData(
-        checkColor: MaterialStateProperty.all(Colors.white),
+        checkColor: WidgetStateProperty.all(Colors.white),
         fillColor:
-            MaterialStateColor.resolveWith((states) => kPrimaryLightColor),
-        overlayColor: MaterialStateProperty.all(Colors.white70),
+            WidgetStateColor.resolveWith((states) => kPrimaryLightColor),
+        overlayColor: WidgetStateProperty.all(Colors.white70),
         side: BorderSide(color: kPrimaryLightColor),
       ),
       radioTheme: RadioThemeData(
         fillColor:
-            MaterialStateColor.resolveWith((states) => kPrimaryLightColor),
-        overlayColor: MaterialStateProperty.all(LightColors.kLightGray1),
+            WidgetStateColor.resolveWith((states) => kPrimaryLightColor),
+        overlayColor: WidgetStateProperty.all(LightColors.kLightGray1),
       ),
 
       /// COMPONENT THEMES
@@ -136,13 +136,11 @@ class Themes {
         onSecondary: lightColors.onSecondary,
         error: lightColors.error,
         onError: lightColors.onError,
-        background: Colors.white,
-        onBackground: Colors.white,
         surface: Colors.white,
         onSurface: Colors.white,
-        surfaceVariant: lightColors.surfaceVariant,
+        surfaceContainerHighest: lightColors.surfaceVariant,
         onSurfaceVariant: lightColors.onSurfaceVariant,
-      ).copyWith(background: Colors.white).copyWith(background: Colors.white),
+      ).copyWith(surface: Colors.white).copyWith(surface: Colors.white),
     );
   }
 

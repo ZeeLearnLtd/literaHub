@@ -17,16 +17,16 @@ class MLLModel {
 
   toJson() {
     return jsonEncode({
-      'id': this.id,
-      'name': this.name,
-      'user_name': this.userName,
-      'contact_no': this.contact_no,
-      'father_name': this.father_name,
-      'email': this.email,
-      'city': this.city,
-      'school': this.school,
-      'school_class': this.school_class,
-      "access_code": this.access_code
+      'id': id,
+      'name': name,
+      'user_name': userName,
+      'contact_no': contact_no,
+      'father_name': father_name,
+      'email': email,
+      'city': city,
+      'school': school,
+      'school_class': school_class,
+      "access_code": access_code
     });
   }
 }

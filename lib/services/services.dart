@@ -11,7 +11,7 @@ import 'package:literahub/core/constant/LocalConstant.dart';
 
 class LiteriaHubAPI {
   static var client = http.Client();
-  static var _baseURL = LocalConstant.BASE_URL;
+  static final _baseURL = LocalConstant.BASE_URL;
 
   static Future<String> refreshToken({required String uid,required String pwd}) async {
     var response = await client.post(Uri.parse('$_baseURL/snltoken'), 
@@ -19,7 +19,7 @@ class LiteriaHubAPI {
           'Content-Type': 'application/json; charset=UTF-8'
         },
     body: jsonEncode(<String, String>{"uid": uid, "pwd": pwd}));
-    debugPrint('in 18 ${_baseURL} ${response.body}');
+    debugPrint('in 18 $_baseURL ${response.body}');
     if (response.statusCode == 200 && response.body.isNotEmpty) {
       var json = response.body;
       //status is success but not excepted result
@@ -27,21 +27,13 @@ class LiteriaHubAPI {
         return "Invalid User Name and Password";
       }
       var loginRes = tokenRespFromJson(json);
-      if (loginRes != null) {
-        return loginRes.message!;
-      } else {
-        return "Invalid User Name and Password";
-      }
-    }else {
+      return loginRes.message!;
+        }else {
       var json = response.body;
       try{
         var errorResp = errorRespFromJson(json);
-        if (errorResp == null) {
-          return "Invalid User Name and Password";
-        } else {
-          return errorResp.error;
-        }
-      }catch(e){
+        return errorResp.error;
+            }catch(e){
         return "Invalid User Name and Password";
       }
     }
@@ -54,29 +46,21 @@ class LiteriaHubAPI {
           'Authorization' : token
         },
         body: jsonEncode(<String, String>{"uid": uid, "pwd": pwd}));
-        debugPrint('in loginAPi token ${token}');
+        debugPrint('in loginAPi token $token');
     debugPrint('in 53 ${response.request!.url} ${response.body}');
     if (response.statusCode == 200) {
       var json = response.body;
       var loginRes = loginRespFromJson(json);
-      if (loginRes != null) {
-        return loginRes;
-      } else {
-        return 'Invalid User Name and Password';
-      }
-    } else {
+      return loginRes;
+        } else {
       var json = response.body;
-      if(json==null || json.trim().isEmpty){
+      if(json.trim().isEmpty){
         return 'Invalid UserName and Password';
       }else{
-      print('json ${json}');
+      print('json $json');
       var errorResp = errorRespFromJson(json);
-      if (errorResp == null) {
-        return 'Invalid UserName and Password';
-      } else {
-        return errorResp.error;
-      }
-      }
+      return errorResp.error;
+          }
     }
   }
 }
