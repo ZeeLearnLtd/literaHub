@@ -9,10 +9,10 @@ class LiteriaHubHomePage extends StatefulWidget {
 
 class _HomeState extends State<LiteriaHubHomePage> {
 
-  Color lightBlue = Color(0xffdbf0f1);
-  Color darkBlue = Color(0xff39888e);
-  Color yellow = Color(0xffffe9a7);
-  Color pink = Color(0xfff1e7f5);
+  Color lightBlue = const Color(0xffdbf0f1);
+  Color darkBlue = const Color(0xff39888e);
+  Color yellow = const Color(0xffffe9a7);
+  Color pink = const Color(0xfff1e7f5);
 
  @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class _HomeState extends State<LiteriaHubHomePage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Image.asset('assets/images/literalogo.jpg'),
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment:  MainAxisAlignment.start,
           children: [
@@ -40,7 +40,7 @@ class _HomeState extends State<LiteriaHubHomePage> {
         actions: [
           IconButton(
             onPressed: (){},
-            icon: Icon(
+            icon: const Icon(
               Icons.notifications_none,
               color: Colors.black,
               size: 30,
@@ -65,12 +65,12 @@ class _HomeState extends State<LiteriaHubHomePage> {
           // ),
           Expanded(
             child: Container(
-              padding: EdgeInsets.all(30),
+              padding: const EdgeInsets.all(30),
               width: MediaQuery.of(context).size.width,
               color: Colors.white,
               child: Column(
                 children: [
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("Top Rated Tutors", style: TextStyle(
@@ -107,10 +107,10 @@ class _HomeState extends State<LiteriaHubHomePage> {
     return InkWell(
       onTap: (){},
       child: Container(
-        margin: EdgeInsets.only(top: 20),
+        margin: const EdgeInsets.only(top: 20),
         height: 130,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(30)),
+          borderRadius: const BorderRadius.all(Radius.circular(30)),
           color: lightBlue.withOpacity(0.5)
         ),
         child: Row(
@@ -119,11 +119,11 @@ class _HomeState extends State<LiteriaHubHomePage> {
               child: Stack(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(30)),
+                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(30)),
                     child: Container(
                       height: 125,
                       width: 150,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage('asset/images/iconBgNew.png'),
                           fit: BoxFit.contain
@@ -133,10 +133,10 @@ class _HomeState extends State<LiteriaHubHomePage> {
                   ),
                   Container(
                     height: 130,
-                    padding: EdgeInsets.only(left: 5, top: 5),
+                    padding: const EdgeInsets.only(left: 5, top: 5),
                     child: Stack(
                       children: [
-                        Container(
+                        SizedBox(
                           width: 60,
                           height: 60,
                           child: RotatedBox(
@@ -148,10 +148,10 @@ class _HomeState extends State<LiteriaHubHomePage> {
                             ),
                           ),
                         ),
-                        Container(
+                        SizedBox(
                           width: 60,
                           height: 60,
-                          child: Center(
+                          child: const Center(
                             child: Text("4.5", style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
@@ -183,21 +183,21 @@ class _HomeState extends State<LiteriaHubHomePage> {
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(15),
+                padding: const EdgeInsets.all(15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                       Text("GRADE $grade",style: TextStyle(
+                       Text("GRADE $grade",style: const TextStyle(
                          fontSize: 10,
                          color: Colors.grey
                        ),)
                       ],
                     ),
-                    SizedBox(height: 5,),
-                    Text(name, style: TextStyle(
+                    const SizedBox(height: 5,),
+                    Text(name, style: const TextStyle(
                       fontSize: 19,
                       fontWeight: FontWeight.w700
                     ),),
@@ -210,7 +210,7 @@ class _HomeState extends State<LiteriaHubHomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("\$$price/session",style: TextStyle(
+                          Text("\$$price/session",style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500
                           ),)

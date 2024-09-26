@@ -17,13 +17,9 @@ class ApiServiceHandler {
     apiService.getToken(requestModel).then((value) {
       if (value != null) {
         TokenResponse tokenResponse;
-        if (value != null) {
-          tokenResponse = value;
-          response.onSuccess(tokenResponse);
-        } else {
-          response.onError(API_STATUS_ERROR,'Unable to get token');
-        }
-      } else {
+        tokenResponse = value;
+        response.onSuccess(tokenResponse);
+            } else {
         response.onError(API_STATUS_ERROR,'Unable to get token');
       }
     });
@@ -34,13 +30,9 @@ class ApiServiceHandler {
     apiService.validateUser(requestModel,token).then((value) {
       if (value != null) {
         UserResponse userResponse;
-        if (value != null) {
-          userResponse = value;
-          response.onSuccess(userResponse);
-        } else {
-          response.onError(API_STATUS_ERROR,'Invalid User Name and Password');
-        }
-      } else {
+        userResponse = value;
+        response.onSuccess(userResponse);
+            } else {
         response.onError(API_STATUS_ERROR,'Invalid User Name and Password');
       }
     });
@@ -54,13 +46,9 @@ class ApiServiceHandler {
     apiService.getFradomDeeplink(requestModel).then((value) {
       if (value != null) {
         FradomLinkResponse fradomResponse;
-        if (value != null) {
-          fradomResponse = value;
-          response.onSuccess(fradomResponse);
-        } else {
-          response.onError(API_STATUS_ERROR,'Unable to get Lnk');
-        }
-      } else {
+        fradomResponse = value;
+        response.onSuccess(fradomResponse);
+            } else {
         response.onError(API_STATUS_ERROR,'Unable to get Link');
       }
     });

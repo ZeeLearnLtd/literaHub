@@ -48,57 +48,57 @@ class GetFradomDeepLink {
     if (json['siblings'] != null) {
       siblings = <Siblings>[];
       json['siblings'].forEach((v) {
-        siblings!.add(new Siblings.fromJson(v));
+        siblings.add(Siblings.fromJson(v));
       });
     }
   }
 
   toJson() {
-    if(this.userType=='Teacher'){
+    if(userType=='Teacher'){
       return jsonEncode({
-        'name': this.name,
-        'grade': this.grade,
-        'school_code': this.schoolCode,
-        'contact_no': this.contactNo,
-        'device_type': this.deviceType,
-        'description': this.description,
-        'school_class': this.schoolClassList[0].schoolClass,// this.schoolClassList!.map((v) => this.schoolClass).toList(),
+        'name': name,
+        'grade': grade,
+        'school_code': schoolCode,
+        'contact_no': contactNo,
+        'device_type': deviceType,
+        'description': description,
+        'school_class': schoolClassList[0].schoolClass,// this.schoolClassList!.map((v) => this.schoolClass).toList(),
         'is_teacher':true,
 
         //'country_code': this.countryCode,
         //'email': this.email,
         //'age': this.age,
-        'siblings': this.siblings!.map((v) => v.toJson()).toList(),
+        'siblings': siblings.map((v) => v.toJson()).toList(),
       });
     }else {
       return jsonEncode({
-        'name': this.name,
-        'grade': this.grade,
-        'school_code': this.schoolCode,
-        'contact_no': this.contactNo,
-        'device_type': this.deviceType,
-        'description': this.description,
-        'school_class': this.schoolClass,
+        'name': name,
+        'grade': grade,
+        'school_code': schoolCode,
+        'contact_no': contactNo,
+        'device_type': deviceType,
+        'description': description,
+        'school_class': schoolClass,
         //'country_code': this.countryCode,
         //'email': this.email,
         //'age': this.age,
-        'siblings': this.siblings!.map((v) => v.toJson()).toList(),
+        'siblings': siblings.map((v) => v.toJson()).toList(),
       });
     }
   }
 
   Map<String, dynamic> toJson1() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['grade'] = this.grade;
-    data['school_code'] = this.schoolCode;
-    data['contact_no'] = this.contactNo;
-    data['device_type'] = this.deviceType;
-    data['description'] = this.description;
-    data['school_class'] = this.schoolClass;
-    data['country_code'] = this.countryCode;
-    data['email'] = this.email;
-    data['age'] = this.age;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['grade'] = grade;
+    data['school_code'] = schoolCode;
+    data['contact_no'] = contactNo;
+    data['device_type'] = deviceType;
+    data['description'] = description;
+    data['school_class'] = schoolClass;
+    data['country_code'] = countryCode;
+    data['email'] = email;
+    data['age'] = age;
     /*if (this.siblings != null) {
       data['siblings'] = this.siblings!.map((v) => v.toJson()).toList();
     }*/
@@ -122,11 +122,11 @@ class Siblings {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['grade'] = this.grade;
-    data['school_code'] = this.schoolCode;
-    data['school_class'] = this.schoolClass;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['grade'] = grade;
+    data['school_code'] = schoolCode;
+    data['school_class'] = schoolClass;
     return data;
   }
 
@@ -143,7 +143,7 @@ class SchoolClass {
   }
 
   Map<String, dynamic> toSchoolClass(String schoolClass) {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['school_class'] =schoolClass;
     return data;
   }

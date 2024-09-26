@@ -38,12 +38,12 @@ class _LoginFormState extends State<LoginForm> implements onResponse{
   void initState() {
     super.initState();
 
-    userList.add(new UserInfo(1, 'S1', 'Ankush Shinde', ['2'], 'S-1-12'));
-    userList.add(new UserInfo(1, 'T1', 'Sanavi Patil', ['2'], 'TEACH-1-12'));
+    userList.add(UserInfo(1, 'S1', 'Ankush Shinde', ['2'], 'S-1-12'));
+    userList.add(UserInfo(1, 'T1', 'Sanavi Patil', ['2'], 'TEACH-1-12'));
     userList.add(
-        new UserInfo(1, 'SP1', 'Tanvi Patil', ['Nursery'], 'S-Pre-primary'));
+        UserInfo(1, 'SP1', 'Tanvi Patil', ['Nursery'], 'S-Pre-primary'));
     userList.add(
-        new UserInfo(1, 'TP1', 'Anvi Patil', ['Nursery'], 'TEACH-Pre-primary'));
+        UserInfo(1, 'TP1', 'Anvi Patil', ['Nursery'], 'TEACH-Pre-primary'));
 
     checkUserLogin();
   }
@@ -256,11 +256,14 @@ class _LoginFormState extends State<LoginForm> implements onResponse{
           box.put(LocalConstant.KEY_LOGIN_RESPONSE, json);
           box.put(LocalConstant.KEY_LOGIN_PASSWORD, userPasswordController.text.toString());
           box.put(LocalConstant.KEY_LOGIN_USERNAME, userNameController.text.toString());
+          box.put(LocalConstant.KEY_IS_FRADOM, response.root!.subroot!.isfreedomaccess);
+          box.put(LocalConstant.KEY_FRADOM_SCHOOLCODE, response.root!.subroot!.freedom_code);
+          print('School COde ${response.root!.subroot!.freedom_code}');
           Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => HomePage(
-              userInfo: response!,
+              userInfo: response,
             ),
           ));
       }else{
