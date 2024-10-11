@@ -100,32 +100,35 @@ class _MyHomePageState extends State<HomePage>
 
   checkUpdate() async{
     try{
-      print('Check update started...');
-      final remoteConfig = FirebaseRemoteConfig.instance;
-      await remoteConfig.setConfigSettings(RemoteConfigSettings(
-          fetchTimeout: const Duration(minutes: 2),
-          minimumFetchInterval: const Duration(hours: 1),
-      ));
+      if (kIsWeb) {
+    } else if (Platform.isAndroid) {
+          print('Check update started...');
+          final remoteConfig = FirebaseRemoteConfig.instance;
+          await remoteConfig.setConfigSettings(RemoteConfigSettings(
+              fetchTimeout: const Duration(minutes: 2),
+              minimumFetchInterval: const Duration(hours: 1),
+          ));
 
-    // Fetch Remote Config values
-      await remoteConfig.fetchAndActivate();
-      // Get the latest version from Remote Config
-      final latestVersion = remoteConfig.getString('app_version');
-      print('Latest Verison ${latestVersion}');
-      if (latestVersion.isEmpty) {
-        return; // Handle the case where there's no version info
-      }
+        // Fetch Remote Config values
+          await remoteConfig.fetchAndActivate();
+          // Get the latest version from Remote Config
+          final latestVersion = remoteConfig.getString('app_version');
+          //print('Latest Verison ${latestVersion}');
+          if (latestVersion.isEmpty) {
+            return; // Handle the case where there's no version info
+          }
 
-      // Get the current app version
-      final packageInfo = await PackageInfo.fromPlatform();
-      final currentVersion = packageInfo.buildNumber;
-      print('currentVersion Verison ${currentVersion}');
-      // Compare versions
-      if (_isUpdateAvailable(currentVersion, latestVersion)) {
+          // Get the current app version
+          final packageInfo = await PackageInfo.fromPlatform();
+          final currentVersion = packageInfo.buildNumber;
+          //print('currentVersion Verison ${currentVersion}');
+          // Compare versions
+          if (_isUpdateAvailable(currentVersion, latestVersion)) {
 
-        showUpdateAlert(packageInfo.packageName);
-        //_promptForUpdate(packageInfo.packageName);
-      }
+            showUpdateAlert(packageInfo.packageName);
+            //_promptForUpdate(packageInfo.packageName);
+          }
+    }
 
     }catch(e){
       print('Erorr in 125 ${e.toString()}');
@@ -1073,9 +1076,23 @@ class _MyHomePageState extends State<HomePage>
 
   openFradomApp(String url) async {
     // Check if Spotify is installed
-    if (await canLaunchUrl(Uri.parse(url))) {
-      // Launch the url which will open Spotify
-      launchUrl(Uri.parse(url));
+    if(!kIsWeb && Platform.isIOS){
+      bool isInstalled = await DeviceApps.isAppInstalled('com.application.freadom');
+      if(isInstalled){
+        applaunchUrl(Uri.parse("fradomapp://zee-school-integration?userdata=${url}"));
+      }else{
+        await LaunchApp.openApp(
+        androidPackageName: '',
+        iosUrlScheme: 'fradomapp://',
+        appStoreLink: 'https://apps.apple.com/in/app/freadom-read-play-go/id1358450502',
+        openStore: false
+      );
+      }
+    }else{
+      if (await canLaunchUrl(Uri.parse(url))) {
+        // Launch the url which will open Spotify
+        launchUrl(Uri.parse(url));
+      }
     }
   }
 
