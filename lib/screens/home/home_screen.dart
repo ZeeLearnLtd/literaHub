@@ -59,6 +59,7 @@ class _MyHomePageState extends State<HomePage>
   final int MLZS_READING_iNDEX = 5;
   final int ZLL_SAATHI_iNDEX = 6;
   final int ZLL_TRANSACTION_iNDEX = 7;
+  final int ZLL_SCHOOL_MANAGEMENT_INDEX = 9;
 
   final String MYSCHOOL = "My School​";
   final String TEACHER_OPERATION = "Teaching Operations";
@@ -69,6 +70,7 @@ class _MyHomePageState extends State<HomePage>
   final String MLZS_READING = "MLZS ​Reading";
   final String ZLL_SAATHI = "ZLL​ SAATHI​";
   final String ZLL_TRANSACTION = "ZLL​ Transaction​​";
+  final String ZLL_SCHOOL_MANAGEMENT = "School ​Management";
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -521,6 +523,8 @@ class _MyHomePageState extends State<HomePage>
       menuItems.add(
           HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
       menuItems.add(HomeMenuItem(ZLL_TRANSACTION_iNDEX, ZLL_TRANSACTION, ZLL_TRANSACTION, 'hotrans'));
+      menuItems.add(
+          HomeMenuItem(ZLL_SCHOOL_MANAGEMENT_INDEX, ZLL_SCHOOL_MANAGEMENT, ZLL_SCHOOL_MANAGEMENT, 'schoolmanagement'));
     }
     setState(() {});
   }
@@ -551,6 +555,8 @@ class _MyHomePageState extends State<HomePage>
           HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
       menuItems.add(
           HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+      menuItems.add(
+      HomeMenuItem(ZLL_SCHOOL_MANAGEMENT_INDEX, ZLL_SCHOOL_MANAGEMENT, ZLL_SCHOOL_MANAGEMENT, 'schoolmanagement'));
     }
     setState(() {});
   }
@@ -808,9 +814,9 @@ class _MyHomePageState extends State<HomePage>
           userPassword);
       print(model.toJson());
       //bool isInstalled = await DeviceApps.isAppInstalled(packageName);
-      String encoded = base64
-          .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
+      String encoded = base64.encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
       String decoded = utf8.decode(base64.decode(encoded));
+      print('encode ${encoded}');
       bool isAvaliable = await LaunchApp.isAppInstalled(
           androidPackageName: packageName,
           iosUrlScheme: 'https://$schema://');
@@ -886,18 +892,9 @@ class _MyHomePageState extends State<HomePage>
   }
 
   openMllApp(String packageName, String schema) async {
-    Subroot userinfo = widget.userInfo.root!.subroot!;
-    //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
-    if (userinfo.branchList![0].batchList == null ||
-        userinfo.branchList![0].batchList!.isEmpty) {
-      Utility.showAlert(
-          context, 'Batch not configured, Please connect with your center ');
-    } else {
-      String grade = userinfo.branchList![0].batchList![0]!.batchName!
-          .split('/')[1]
-          .trim();
       print("$schema://open?username=$userName,password=$userPassword");
       bool isInstalled = await DeviceApps.isAppInstalled(packageName);
+      print('app installed   ${isInstalled}');
       if (isInstalled) {
         // dXNlcm5hbWU6cGFzc3dvcmQ=
         applaunchUrl(Uri.parse("$schema://open?username=$userName,password=$userPassword"));
@@ -908,12 +905,14 @@ class _MyHomePageState extends State<HomePage>
             appStoreLink: '',
             openStore: true);
       }
-    }
   }
 
   @override
   void onClick(int action, value) {
-    if(action == ZLL_TRANSACTION_iNDEX){
+    print('action ${action} ${ZLL_SCHOOL_MANAGEMENT_INDEX}');
+    if (action == ZLL_SCHOOL_MANAGEMENT_INDEX) {
+      openMllApp('com.innova.mlzepfmgmt', 'epfmanagementapp');
+    } else if(action == ZLL_TRANSACTION_iNDEX){
        Navigator.of(context).push(MaterialPageRoute(
               builder: (BuildContext context) => MyWebView(
                     title: 'ZLL Transaction',
@@ -979,7 +978,6 @@ class _MyHomePageState extends State<HomePage>
     } else if (action == TEACHER_OPERATION_iNDEX) {
       //lunchExternalApp('eplusreg.innova.com.teacher_epfuture');
       openMllApp('eplusreg.innova.com.teacher_mlz_epfuture', 'epfTeacherApp');
-      //openMllApp('com.innova.mis_ep_future', 'openMllApp');
     } else if (action == EXTENDED_CLASSROOM_iNDEX) {
       openmlzs("com.zeelearn.mlzsapp", "mlzsapp", "6463385772");
     } else if (action == PENTEMIND_iNDEX) {
