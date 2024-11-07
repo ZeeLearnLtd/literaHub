@@ -19,6 +19,7 @@ import 'package:literahub/model/MllModel.dart';
 import 'package:literahub/model/menuitem.dart';
 import 'package:literahub/screens/auth/views/login.dart';
 import 'package:literahub/screens/login/login_screen.dart';
+import 'package:literahub/widgets/myweb.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:saathi/zllsaathi.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -37,7 +38,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HomePage extends StatefulWidget {
   final UserResponse userInfo;
 
-  HomePage({
+  const HomePage({
     super.key,
     required this.userInfo,
   });
@@ -58,6 +59,7 @@ class _MyHomePageState extends State<HomePage>
   final int MLZS_READING_iNDEX = 5;
   final int ZLL_SAATHI_iNDEX = 6;
   final int ZLL_TRANSACTION_iNDEX = 7;
+  final int ZLL_SCHOOL_MANAGEMENT_INDEX = 9;
 
   final String MYSCHOOL = "My School​";
   final String TEACHER_OPERATION = "Teaching Operations";
@@ -68,15 +70,17 @@ class _MyHomePageState extends State<HomePage>
   final String MLZS_READING = "MLZS ​Reading";
   final String ZLL_SAATHI = "ZLL​ SAATHI​";
   final String ZLL_TRANSACTION = "ZLL​ Transaction​​";
+  final String ZLL_SCHOOL_MANAGEMENT = "School ​Management";
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<HomeMenuItem> menuItems = [];
   UserResponse? userinfo;
-  BranchList? _selectedBranch = null;
+  BranchList? _selectedBranch;
   String userPassword = '';
   String userName = '';
   AppUpdateInfo? _updateInfo;
+  String isFradomApp = '';
 
   @override
   void initState() {
@@ -108,12 +112,28 @@ class _MyHomePageState extends State<HomePage>
               fetchTimeout: const Duration(minutes: 2),
               minimumFetchInterval: const Duration(hours: 1),
           ));
+      if (kIsWeb) {
+      } else if (Platform.isAndroid) {
+          print('Check update started...');
+          final remoteConfig = FirebaseRemoteConfig.instance;
+          await remoteConfig.setConfigSettings(RemoteConfigSettings(
+              fetchTimeout: const Duration(minutes: 2),
+              minimumFetchInterval: const Duration(hours: 1),
+          ));
 
         // Fetch Remote Config values
           await remoteConfig.fetchAndActivate();
           // Get the latest version from Remote Config
           final latestVersion = remoteConfig.getString('app_version');
           //print('Latest Verison ${latestVersion}');
+          if (latestVersion.isEmpty) {
+            return; // Handle the case where there's no version info
+          }
+        // Fetch Remote Config values
+          await remoteConfig.fetchAndActivate();
+          // Get the latest version from Remote Config
+          final latestVersion = remoteConfig.getString('app_version');
+          print('Latest Verison $latestVersion');
           if (latestVersion.isEmpty) {
             return; // Handle the case where there's no version info
           }
@@ -124,11 +144,21 @@ class _MyHomePageState extends State<HomePage>
           //print('currentVersion Verison ${currentVersion}');
           // Compare versions
           if (_isUpdateAvailable(currentVersion, latestVersion)) {
+          // Get the current app version
+          final packageInfo = await PackageInfo.fromPlatform();
+          final currentVersion = packageInfo.buildNumber;
+          print('currentVersion Verison $currentVersion');
+          // Compare versions
+          if (_isUpdateAvailable(currentVersion, latestVersion)) {
 
             showUpdateAlert(packageInfo.packageName);
             //_promptForUpdate(packageInfo.packageName);
           }
     }
+            showUpdateAlert(packageInfo.packageName);
+            //_promptForUpdate(packageInfo.packageName);
+          }
+      }
 
     }catch(e){
       print('Erorr in 125 ${e.toString()}');
@@ -142,7 +172,7 @@ class _MyHomePageState extends State<HomePage>
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Alert"),
-          content: Text('New Version of Application are avaliable, Please Update the App'),
+          content: const Text('New Version of Application are avaliable, Please Update the App'),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             ElevatedButton(
@@ -248,7 +278,6 @@ class _MyHomePageState extends State<HomePage>
                 'New version of our LiteriaHub application is now available, and we highly recommend that you install it to benefit from its enhanced features and improved security.'));
       }
     });
-    // TODO: implement initState
   }
   String schoolCode = '';
   getUserInfo() async {
@@ -257,6 +286,9 @@ class _MyHomePageState extends State<HomePage>
     String json = box.get(LocalConstant.KEY_LOGIN_RESPONSE);
     userName = box.get(LocalConstant.KEY_LOGIN_USERNAME);
     userPassword = box.get(LocalConstant.KEY_LOGIN_PASSWORD);
+    schoolCode = box.get(LocalConstant.KEY_FRADOM_SCHOOLCODE);
+    isFradomApp = box.get(LocalConstant.KEY_IS_FRADOM);
+    
     userinfo = UserResponse.fromJson(jsonDecode(json));
     if (userinfo != null &&
         userinfo!.root != null &&
@@ -267,7 +299,7 @@ class _MyHomePageState extends State<HomePage>
         batchController.text = _selectedBranch!.branchName!;
         branchController.text = _selectedBranch!.batchList![0]!.batchName!;
       }catch(e){}
-      schoolCode = getSchoolCode(userinfo!.root!.subroot!.branchList![0].branchId!);
+      
       
     }
     //print(userinfo!.toJson());
@@ -286,7 +318,14 @@ class _MyHomePageState extends State<HomePage>
 
       if(schoolCode.isNotEmpty)
       menuItems.add(HomeMenuItem(
+      menuItems.add(
+          HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+      menuItems.add(
+          HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      if(schoolCode.isNotEmpty) {
+        menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      }
       //menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));
       //menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
     } else if (widget.userInfo.root!.subroot!.userRole!
@@ -343,11 +382,12 @@ class _MyHomePageState extends State<HomePage>
       print('in else ');
       getSystemAdminMenu();
     }
+    menuItems.add(HomeMenuItem(ZLL_TRANSACTION_iNDEX, ZLL_TRANSACTION, ZLL_TRANSACTION, 'hotrans'));
     setState(() {});
   }
 
   Future<void> applaunchUrl(url) async {
-    print('url status ${url}');
+    print('url status $url');
     bool isFound = await launchUrl(url);
     print('is Found $isFound');
     if (!isFound) {
@@ -392,11 +432,16 @@ class _MyHomePageState extends State<HomePage>
       menuItems.add(HomeMenuItem(MYSCHOOLiNDEX, MYSCHOOL, MYSCHOOL, 'myclass'));
       menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
           EXTENDED_CLASSROOM, 'exclassroom'));
-          if(schoolCode.isNotEmpty)
-      menuItems.add(HomeMenuItem(
+      if(isFradomAppAccess()) {
+        menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      }
       //menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     }
+  }
+
+  bool isFradomAppAccess(){
+    return isFradomApp.isNotEmpty && isFradomApp=='1' ? true : false;
   }
 
   getGPMenu() {
@@ -427,9 +472,10 @@ class _MyHomePageState extends State<HomePage>
           EXTENDED_CLASSROOM, 'exclassroom'));
       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
           STUDENT_ANALYTICS, 'studentanalytis'));
-          if(schoolCode.isNotEmpty)
-      menuItems.add(HomeMenuItem(
+      if(isFradomAppAccess()) {
+        menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      }
     }
   }
 
@@ -474,9 +520,10 @@ class _MyHomePageState extends State<HomePage>
           STUDENT_ANALYTICS, 'studentanalytis'));
       menuItems.add(
           HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-          if(schoolCode.isNotEmpty)
-      menuItems.add(HomeMenuItem(
+      if(isFradomAppAccess()) {
+        menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      }
     }
   }
 
@@ -505,6 +552,9 @@ class _MyHomePageState extends State<HomePage>
           HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
       menuItems.add(
           HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+      menuItems.add(HomeMenuItem(ZLL_TRANSACTION_iNDEX, ZLL_TRANSACTION, ZLL_TRANSACTION, 'hotrans'));
+      menuItems.add(
+          HomeMenuItem(ZLL_SCHOOL_MANAGEMENT_INDEX, ZLL_SCHOOL_MANAGEMENT, ZLL_SCHOOL_MANAGEMENT, 'schoolmanagement'));
     }
     setState(() {});
   }
@@ -527,13 +577,16 @@ class _MyHomePageState extends State<HomePage>
           EXTENDED_CLASSROOM, 'exclassroom'));
       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
           STUDENT_ANALYTICS, 'studentanalytis'));
-          if(schoolCode.isNotEmpty)
-      menuItems.add(HomeMenuItem(
+          if(schoolCode.isNotEmpty) {
+            menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+          }
       menuItems.add(
           HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
       menuItems.add(
           HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+      menuItems.add(
+      HomeMenuItem(ZLL_SCHOOL_MANAGEMENT_INDEX, ZLL_SCHOOL_MANAGEMENT, ZLL_SCHOOL_MANAGEMENT, 'schoolmanagement'));
     }
     setState(() {});
   }
@@ -546,19 +599,14 @@ class _MyHomePageState extends State<HomePage>
       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
           STUDENT_ANALYTICS, 'studentanalytis'));
     } else {
-      // menuItems.add(HomeMenuItem(TEACHER_OPERATION_iNDEX, TEACHER_OPERATION,
-      //     TEACHER_OPERATION, 'teachingoperation'));
-      // menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
-      //     EXTENDED_CLASSROOM, 'exclassroom'));
-      // menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,
-      //     STUDENT_ANALYTICS, 'studentanalytis'));
-      // menuItems.add(
-      //     HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-      if(schoolCode.isNotEmpty)
-      menuItems.add(HomeMenuItem(
+      if(schoolCode.isNotEmpty) {
+        menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
+      }
       menuItems.add(
           HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+          menuItems.add(
+      HomeMenuItem(ZLL_SCHOOL_MANAGEMENT_INDEX, ZLL_SCHOOL_MANAGEMENT, ZLL_SCHOOL_MANAGEMENT, 'schoolmanagement'));
     }
   }
 
@@ -665,7 +713,7 @@ class _MyHomePageState extends State<HomePage>
                         : 'Class ',
                     style: LightColors.subtitleStyle10White,
                   ),
-                  Icon(
+                  const Icon(
                     Icons.arrow_drop_down,
                     color: Colors.white,
                   )
@@ -677,8 +725,8 @@ class _MyHomePageState extends State<HomePage>
             onTap: () {
               signOut();
             },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Icon(
                 Icons.logout,
                 color: Colors.white,
@@ -698,11 +746,11 @@ class _MyHomePageState extends State<HomePage>
           return Container(
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
-            margin: EdgeInsets.all(20),
+            margin: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text('Select School'),
+                const Text('Select School'),
                 ZeeDropDown(
                   textStyle: LightColors.textHeaderStyle,
                   title: 'Select School',
@@ -712,9 +760,9 @@ class _MyHomePageState extends State<HomePage>
                   displayFunction: (p0) => '${p0.branchName ?? ''}}',
                   onChanged: (p0) {
                     if (p0 != null) {
-                      _selectedBranch = p0!;
+                      _selectedBranch = p0;
                       print(_selectedBranch!.batchList);
-                      batchController.text = p0!.branchName!;
+                      batchController.text = p0.branchName!;
                       setState(() {});
                     } else {
                       //selectedFilterFranchisee = p0;
@@ -731,13 +779,13 @@ class _MyHomePageState extends State<HomePage>
                     displayFunction: (p0) => '${p0!.batchName ?? ''}}',
                     onChanged: (p0) {
                       if (p0 != null) {
-                        branchController.text = p0!.batchName!;
+                        branchController.text = p0.batchName!;
                       } else {
                         //selectedFilterFranchisee = p0;
                       }
                     },
                   ),
-                SizedBox(
+                const SizedBox(
                   height: 100,
                 )
               ],
@@ -777,7 +825,7 @@ class _MyHomePageState extends State<HomePage>
   openmlzs(String packageName, String schema, String appleId) async {
     Subroot userinfo = widget.userInfo.root!.subroot!;
     //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
-    if (userinfo.branchList![0].batchList == null || userinfo.branchList![0].batchList!.length == 0) {
+    if (userinfo.branchList![0].batchList == null || userinfo.branchList![0].batchList!.isEmpty) {
       Utility.showAlert(
           context, 'Batch not configured, Please connect with your center ');
     } else {
@@ -798,8 +846,7 @@ class _MyHomePageState extends State<HomePage>
           userPassword);
       print(model.toJson());
       //bool isInstalled = await DeviceApps.isAppInstalled(packageName);
-      String encoded = base64
-          .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
+      String encoded = base64.encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
       String decoded = utf8.decode(base64.decode(encoded));
       if(!kIsWeb && Platform.isIOS){
           bool isInstalled = await canLaunchUrl(Uri.parse("${schema}://open"));
@@ -819,6 +866,13 @@ class _MyHomePageState extends State<HomePage>
           print('App Found Status ${isAvaliable}');
           if (isAvaliable && Platform.isAndroid) {
             //applaunchUrl(Uri.parse("https://${schema}://?data=${encoded}"));
+      print('encode ${encoded}');
+      bool isAvaliable = await LaunchApp.isAppInstalled(
+          androidPackageName: packageName,
+          iosUrlScheme: 'https://$schema://');
+      print('App Found Status $isAvaliable');
+      if (isAvaliable && Platform.isAndroid) {
+        //applaunchUrl(Uri.parse("https://${schema}://?data=${encoded}"));
 
           applaunchUrl(Uri.parse(
                 "${schema}://open?data=${encoded}"));
@@ -848,6 +902,34 @@ class _MyHomePageState extends State<HomePage>
                   ? "https://play.google.com/store/apps/details?id=${packageName}&hl=en_IN"
                   : "https://apps.apple.com/app/id$appleId",
             );
+       applaunchUrl(Uri.parse(
+            "$schema://open?data=$encoded"));
+        //applaunchUrl(Uri.parse("${schema}://?data=${encoded}"));
+      } else if (isAvaliable) {
+        if (isAvaliable) {
+          await LaunchApp.openApp(
+              androidPackageName: packageName,
+              iosUrlScheme:
+                  'https://$schema://?data=$encoded', //'https://kidzee.com/login/?username=F2354&password=Kidzee#123',
+              appStoreLink:
+                  'https://$schema://?data=$encoded', //'https://apps.apple.com/in/app/kidzeeapp/id$appleId',
+              openStore: false);
+        } else {
+          await LaunchApp.openApp(
+              androidPackageName: packageName,
+              iosUrlScheme: 'https://$schema://?data=$encoded',
+              appStoreLink:
+                  'https://$schema://?data=$encoded', //'https://apps.apple.com/in/app/kidzeeapp/id$appleId',
+              openStore: false);
+        }
+      } else {
+        print('app not found');
+        //launch("market://details?id=${packageName}?" + model.toJson());
+        final url = Uri.parse(
+          Platform.isAndroid
+              ? "https://play.google.com/store/apps/details?id=$packageName&hl=en_IN"
+              : "https://apps.apple.com/app/id$appleId",
+        );
 
             ///if the app is not installed it lunches google play store so you can install it from there
             launchUrl(url, mode: LaunchMode.externalApplication);
@@ -861,13 +943,13 @@ class _MyHomePageState extends State<HomePage>
         androidPackageName: 'com.zeelearn.mlzsv1',
         iosUrlScheme: 'kidzeeApp://');
     if (Platform.isIOS) {
-      print('isAvaliable ${isAvaliable}');
+      print('isAvaliable $isAvaliable');
       if (isAvaliable) {
         //launchUrl(Uri.parse('https://www.kidzee.com'));
         await LaunchApp.openApp(
             androidPackageName: 'com.zeelearn.mlzsv1',
             iosUrlScheme:
-                'https://zllsaathi.zeelearn.com/login?username=${userName}&password=${userPassword}', //'kidzeeApp://?login=true&username=F2354&password=Kidzee#123',
+                'https://zllsaathi.zeelearn.com/login?username=$userName&password=$userPassword', //'kidzeeApp://?login=true&username=F2354&password=Kidzee#123',
             appStoreLink:
                 'https://apps.apple.com/in/app/kidzeeapp/id1338356944',
             openStore: true);
@@ -889,21 +971,12 @@ class _MyHomePageState extends State<HomePage>
   }
 
   openMllApp(String packageName, String schema) async {
-    Subroot userinfo = widget.userInfo.root!.subroot!;
-    //String school_class  = userinfo.branchList![0].batchList!.batchName!.split('/')[0].trim();
-    if (userinfo.branchList![0].batchList == null ||
-        userinfo.branchList![0].batchList!.length == 0) {
-      Utility.showAlert(
-          context, 'Batch not configured, Please connect with your center ');
-    } else {
-      String grade = userinfo.branchList![0].batchList![0]!.batchName!
-          .split('/')[1]
-          .trim();
-      print("${schema}://open?username=$userName,password=$userPassword");
+      print("$schema://open?username=$userName,password=$userPassword");
       bool isInstalled = await DeviceApps.isAppInstalled(packageName);
+      print('app installed   ${isInstalled}');
       if (isInstalled) {
         // dXNlcm5hbWU6cGFzc3dvcmQ=
-        applaunchUrl(Uri.parse("${schema}://open?username=$userName,password=$userPassword"));
+        applaunchUrl(Uri.parse("$schema://open?username=$userName,password=$userPassword"));
       } else {
         await LaunchApp.openApp(
             androidPackageName: packageName,
@@ -911,12 +984,20 @@ class _MyHomePageState extends State<HomePage>
             appStoreLink: '',
             openStore: true);
       }
-    }
   }
 
   @override
   void onClick(int action, value) {
-    if (action == ZLL_SAATHI_iNDEX) {
+    print('action ${action} ${ZLL_SCHOOL_MANAGEMENT_INDEX}');
+    if (action == ZLL_SCHOOL_MANAGEMENT_INDEX) {
+      openMllApp('com.innova.mlzepfmgmt', 'epfmanagementapp');
+    } else if(action == ZLL_TRANSACTION_iNDEX){
+       Navigator.of(context).push(MaterialPageRoute(
+              builder: (BuildContext context) => MyWebView(
+                    title: 'ZLL Transaction',
+                    url:'https://www.emountlitera.com/BP/MyLedger.aspx?franchiseeId=1023',
+                  )));
+    }else if (action == ZLL_SAATHI_iNDEX) {
       Subroot userinfo = widget.userInfo.root!.subroot!;
       //ZllSaathi(context, '14002035', null);
       ZllSaathiNative(context, userName, '2',getUserRole(userinfo.userType!) , '0', kPrimaryLightColor, null);
@@ -924,7 +1005,7 @@ class _MyHomePageState extends State<HomePage>
       Subroot userinfo = widget.userInfo.root!.subroot!;
       print(userinfo.toJson());
       if (userinfo.branchList![0].batchList == null ||
-          userinfo.branchList![0].batchList!.length == 0) {
+          userinfo.branchList![0].batchList!.isEmpty) {
         Utility.showAlert(
             context, 'Batch not configured, Please connect with your center ');
       } else {
@@ -949,7 +1030,7 @@ class _MyHomePageState extends State<HomePage>
               name: userinfo.userName!,
               grade: /*userinfo.userType=='Teacher' ? */
                   'Grade ${mGrade.trim()}' /* : 'Grade ${grade.trim()}'*/,
-              schoolCode: getSchoolCode(userinfo.branchList![0].branchId!),
+              schoolCode: schoolCode,
               deviceType: 'Android',
               description: 'MH',
               schoolClass: userinfo.userType == 'Teacher' ? className : grade,
@@ -976,7 +1057,6 @@ class _MyHomePageState extends State<HomePage>
     } else if (action == TEACHER_OPERATION_iNDEX) {
       //lunchExternalApp('eplusreg.innova.com.teacher_epfuture');
       openMllApp('eplusreg.innova.com.teacher_mlz_epfuture', 'epfTeacherApp');
-      //openMllApp('com.innova.mis_ep_future', 'openMllApp');
     } else if (action == EXTENDED_CLASSROOM_iNDEX) {
       openmlzs("com.zeelearn.mlzsapp", "mlzsapp", "6463385772");
     } else if (action == PENTEMIND_iNDEX) {
@@ -990,22 +1070,22 @@ class _MyHomePageState extends State<HomePage>
     }
   }
 
-  String getSchoolCode(String school) {
-    String code = "";
-    print('SCHOOL CODE IS ${school}');
-    if (school.contains('REGUGA1111')) {
-      code = 'mxxbjk';
-    } else if (school.contains('REGUGA1114')) {
-      code = 'skttcj';
-    } else if (school.contains('REGUGA1113')) {
-      code = 'gwqfhm';
-    } else if (school.contains('REGUGA1115')) {
-      code = 'unbhzy';
-    } else if (school.contains('REGUGA1112')) {
-      code = 'mawjwn';
-    }
-    return code;
-  }
+  // String getSchoolCode(String school) {
+  //   String code = "";
+  //   print('SCHOOL CODE IS ${school}');
+  //   if (school.contains('REGUGA1111')) {
+  //     code = 'mxxbjk';
+  //   } else if (school.contains('REGUGA1114')) {
+  //     code = 'skttcj';
+  //   } else if (school.contains('REGUGA1113')) {
+  //     code = 'gwqfhm';
+  //   } else if (school.contains('REGUGA1115')) {
+  //     code = 'unbhzy';
+  //   } else if (school.contains('REGUGA1112')) {
+  //     code = 'mawjwn';
+  //   }
+  //   return code;
+  // }
 
   int lettersToIndex(String letters) {
     var result = 0;
@@ -1034,7 +1114,6 @@ class _MyHomePageState extends State<HomePage>
         userRole = 'Principal';
         break;
     }
-    ;
     return userRole;
   }
 
@@ -1045,7 +1124,7 @@ class _MyHomePageState extends State<HomePage>
       print(package);
       bool isInstalled = await DeviceApps.isAppInstalled(package);
       if (isInstalled) {
-        print('app found ${package}');
+        print('app found $package');
         await LaunchApp.openApp(
                   androidPackageName: package,
                   iosUrlScheme: '',
@@ -1053,10 +1132,10 @@ class _MyHomePageState extends State<HomePage>
                   openStore: false
                 );
       } else {
-        print('app not found ${package}');
+        print('app not found $package');
         final url = Uri.parse(
           Platform.isAndroid
-              ? "https://play.google.com/store/apps/details?id=${package}&hl=en_IN"
+              ? "https://play.google.com/store/apps/details?id=$package&hl=en_IN"
               : "https://apps.apple.com/app/id$package",
         );
 
@@ -1106,8 +1185,7 @@ class _MyHomePageState extends State<HomePage>
     Navigator.of(context).pop();
     if (value is FradomLinkResponse) {
       FradomLinkResponse response = value;
-      if (response != null &&
-          response.result != null &&
+      if (response.result != null &&
           response.result!.data != null) {
         openFradomApp(response.result!.data!);
       }

@@ -90,7 +90,7 @@ class LightColors {
   static const scaffoldBackgroundColor = Color(0xFF464667);
   static const accentCanvasColor = Color(0xFF3E3E61);
   static const white = Colors.white;
-  static final actionColor = Color(0xFF5F5FA7).withOpacity(0.6);
+  static final actionColor = const Color(0xFF5F5FA7).withOpacity(0.6);
   static final divider = Divider(color: white.withOpacity(0.3), height: 1);
 
   static const Color TextColor = Color.fromARGB(255, 14, 44, 83);
@@ -323,7 +323,7 @@ class LightColors {
   );
 
   static TextStyle hintTextStyle1 =
-      TextStyle(color: Colors.black87, fontSize: 12);
+      const TextStyle(color: Colors.black87, fontSize: 12);
   //static const TextStyle pentemindTextStyle = TextStyle(color: TextColor,fontFamily: 'albertSans', fontSize: 16);
   //static const TextStyle pentemindSubTextStyle = TextStyle(color: TextColor,fontFamily: 'albertSans', fontSize: 12);
 }

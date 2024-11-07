@@ -51,8 +51,9 @@ class Utility {
   }
 
   static Future<Box> openBox() async {
-    if (!kIsWeb && !Hive.isBoxOpen(LocalConstant.LITERAHUB))
+    if (!kIsWeb && !Hive.isBoxOpen(LocalConstant.LITERAHUB)) {
       Hive.init((await getApplicationDocumentsDirectory()).path);
+    }
     return await Hive.openBox(LocalConstant.LITERAHUB);
   }
 
