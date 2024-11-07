@@ -275,16 +275,15 @@ class _MyHomePageState extends State<HomePage>
   }
 
   generateMenu() {
-    print('User Role ${widget.userInfo.root!.subroot!.userRole}');
-    print('selected batch is ${branchController.text}');
     menuItems.clear();
     if (LocalConstant.flavor == 'Fradom') {
       menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
     } else if (Platform.isIOS) {
-      menuItems.add(
-          HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
-      menuItems.add(
-          HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
+      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));
+       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
+
       if(schoolCode.isNotEmpty)
       menuItems.add(HomeMenuItem(
           MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
@@ -386,10 +385,7 @@ class _MyHomePageState extends State<HomePage>
   getStudent1to12Menu() {
     menuItems.clear();
     print('getStudent1to12Menu menu');
-    if (Platform.isIOS) {
-      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
-          EXTENDED_CLASSROOM, 'exclassroom'));
-    } else if (LocalConstant.flavor == 'MLL') {
+    if (LocalConstant.flavor == 'MLL') {
       menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,
           EXTENDED_CLASSROOM, 'exclassroom'));
     } else {
@@ -805,44 +801,57 @@ class _MyHomePageState extends State<HomePage>
       String encoded = base64
           .encode(utf8.encode(model.toJson())); // dXNlcm5hbWU6cGFzc3dvcmQ=
       String decoded = utf8.decode(base64.decode(encoded));
-      bool isAvaliable = await LaunchApp.isAppInstalled(
-          androidPackageName: packageName,
-          iosUrlScheme: 'https://${schema}://');
-      print('App Found Status ${isAvaliable}');
-      if (isAvaliable && Platform.isAndroid) {
-        //applaunchUrl(Uri.parse("https://${schema}://?data=${encoded}"));
+      if(!kIsWeb && Platform.isIOS){
+          bool isInstalled = await canLaunchUrl(Uri.parse("${schema}://open"));
+          print('App found is ${isInstalled}');
+          print("${schema}://open?data=${encoded}");
+          if(isInstalled){
+            print(Uri.parse("${schema}://open?data=${encoded}"));
+            applaunchUrl(Uri.parse("${schema}://open?data=${encoded}"));
+          }else{
+            applaunchUrl(Uri.parse("https://apps.apple.com/in/app/freadom-read-play-go/id${appleId}"));
+          }
+      }else{
 
-       applaunchUrl(Uri.parse(
-            "${schema}://open?data=${encoded}"));
-        //applaunchUrl(Uri.parse("${schema}://?data=${encoded}"));
-      } else if (isAvaliable) {
-        if (isAvaliable) {
-          await LaunchApp.openApp(
+          bool isAvaliable = await LaunchApp.isAppInstalled(
               androidPackageName: packageName,
-              iosUrlScheme:
-                  'https://${schema}://?data=${encoded}', //'https://kidzee.com/login/?username=F2354&password=Kidzee#123',
-              appStoreLink:
-                  'https://${schema}://?data=${encoded}', //'https://apps.apple.com/in/app/kidzeeapp/id$appleId',
-              openStore: false);
-        } else {
-          await LaunchApp.openApp(
-              androidPackageName: '${packageName}',
-              iosUrlScheme: 'https://${schema}://?data=${encoded}',
-              appStoreLink:
-                  'https://${schema}://?data=${encoded}', //'https://apps.apple.com/in/app/kidzeeapp/id$appleId',
-              openStore: false);
-        }
-      } else {
-        print('app not found');
-        //launch("market://details?id=${packageName}?" + model.toJson());
-        final url = Uri.parse(
-          Platform.isAndroid
-              ? "https://play.google.com/store/apps/details?id=${packageName}&hl=en_IN"
-              : "https://apps.apple.com/app/id$appleId",
-        );
+              iosUrlScheme: 'https://${schema}://');
+          print('App Found Status ${isAvaliable}');
+          if (isAvaliable && Platform.isAndroid) {
+            //applaunchUrl(Uri.parse("https://${schema}://?data=${encoded}"));
 
-        ///if the app is not installed it lunches google play store so you can install it from there
-        launchUrl(url, mode: LaunchMode.externalApplication);
+          applaunchUrl(Uri.parse(
+                "${schema}://open?data=${encoded}"));
+            //applaunchUrl(Uri.parse("${schema}://?data=${encoded}"));
+          } else if (isAvaliable) {
+            if (isAvaliable) {
+              await LaunchApp.openApp(
+                  androidPackageName: packageName,
+                  iosUrlScheme:
+                      'https://${schema}://?data=${encoded}', //'https://kidzee.com/login/?username=F2354&password=Kidzee#123',
+                  appStoreLink:
+                      'https://${schema}://?data=${encoded}', //'https://apps.apple.com/in/app/kidzeeapp/id$appleId',
+                  openStore: false);
+            } else {
+              await LaunchApp.openApp(
+                  androidPackageName: '${packageName}',
+                  iosUrlScheme: 'https://${schema}://?data=${encoded}',
+                  appStoreLink:
+                      'https://${schema}://?data=${encoded}', //'https://apps.apple.com/in/app/kidzeeapp/id$appleId',
+                  openStore: false);
+            }
+          } else {
+            print('app not found');
+            //launch("market://details?id=${packageName}?" + model.toJson());
+            final url = Uri.parse(
+              Platform.isAndroid
+                  ? "https://play.google.com/store/apps/details?id=${packageName}&hl=en_IN"
+                  : "https://apps.apple.com/app/id$appleId",
+            );
+
+            ///if the app is not installed it lunches google play store so you can install it from there
+            launchUrl(url, mode: LaunchMode.externalApplication);
+          }
       }
     }
   }
@@ -1030,12 +1039,7 @@ class _MyHomePageState extends State<HomePage>
   }
 
   lunchExternalApp(String package) async {
-    // await LaunchApp.openApp(
-    //               androidPackageName: package,
-    //               iosUrlScheme: 'http://kidzee.com',
-    //               appStoreLink: 'https://apps.apple.com/in/app/kidzeeapp/id1338356944',
-    //               openStore: false
-    //             );
+    
     try {
       ///checks if the app is installed on your mobile device
       print(package);
@@ -1077,16 +1081,17 @@ class _MyHomePageState extends State<HomePage>
   openFradomApp(String url) async {
     // Check if Spotify is installed
     if(!kIsWeb && Platform.isIOS){
-      bool isInstalled = await DeviceApps.isAppInstalled('com.application.freadom');
+      print('platform IOS detected.....');
+      bool isInstalled = await DeviceApps.isAppInstalled('com.s2m.freadom');
+      url = url.replaceAll('https://freadom.app.link/zee-school-integration?user_data=', '');
+      isInstalled = await canLaunchUrl(Uri.parse("freadom://zee-school-integration?user_data=${url}"));
+      print('App found is ${isInstalled}');
       if(isInstalled){
-        applaunchUrl(Uri.parse("fradomapp://zee-school-integration?userdata=${url}"));
+        print(Uri.parse("freadom://zee-school-integration?user_data=${url}"));
+        applaunchUrl(Uri.parse("freadom://zee-school-integration?user_data=${url}"));
       }else{
-        await LaunchApp.openApp(
-        androidPackageName: '',
-        iosUrlScheme: 'fradomapp://',
-        appStoreLink: 'https://apps.apple.com/in/app/freadom-read-play-go/id1358450502',
-        openStore: false
-      );
+        applaunchUrl(Uri.parse("https://apps.apple.com/in/app/freadom-read-play-go/id1358450502"));
+        
       }
     }else{
       if (await canLaunchUrl(Uri.parse(url))) {
