@@ -58,6 +58,7 @@ dependencies:
   firebase_remote_config: ^5.1.0
   flutter_downloader: ^1.11.4
 
+
 dependency_overrides:
   #device_info_plus: ^10.0.0
   win32: ^5.4.0

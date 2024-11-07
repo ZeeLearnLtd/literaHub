@@ -575,6 +575,8 @@ class _MyHomePageState extends State<HomePage>
       }
       menuItems.add(
           HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
+          menuItems.add(
+      HomeMenuItem(ZLL_SCHOOL_MANAGEMENT_INDEX, ZLL_SCHOOL_MANAGEMENT, ZLL_SCHOOL_MANAGEMENT, 'schoolmanagement'));
     }
   }
 
