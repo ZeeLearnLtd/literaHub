@@ -310,25 +310,7 @@ class _MyHomePageState extends State<HomePage>
     menuItems.clear();
     if (LocalConstant.flavor == 'Fradom') {
       menuItems.add(HomeMenuItem(MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
-    } else if (Platform.isIOS) {
-      menuItems.add(HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
-      menuItems.add(HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-      menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));
-       menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
-
-      if(schoolCode.isNotEmpty)
-      menuItems.add(HomeMenuItem(
-      menuItems.add(
-          HomeMenuItem(ZLL_SAATHI_iNDEX, ZLL_SAATHI, ZLL_SAATHI, 'zllsaathi'));
-      menuItems.add(
-          HomeMenuItem(PENTEMIND_iNDEX, PENTEMIND, PENTEMIND, 'pentemind'));
-      if(schoolCode.isNotEmpty) {
-        menuItems.add(HomeMenuItem(
-          MLZS_READING_iNDEX, MLZS_READING, MLZS_READING, 'mlzsreading'));
-      }
-      //menuItems.add(HomeMenuItem(EXTENDED_CLASSROOM_iNDEX, EXTENDED_CLASSROOM,EXTENDED_CLASSROOM, 'exclassroom'));
-      //menuItems.add(HomeMenuItem(STUDENT_ANALYTICS_iNDEX, STUDENT_ANALYTICS,STUDENT_ANALYTICS, 'studentanalytis'));
-    } else if (widget.userInfo.root!.subroot!.userRole!
+    }  else if (widget.userInfo.root!.subroot!.userRole!
         .toLowerCase()
         .contains('principal')) {
       getPrincipalMenu();
